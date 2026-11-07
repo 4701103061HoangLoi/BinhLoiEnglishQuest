@@ -7,9 +7,10 @@ import type {
 } from '../types';
 
 function vocabulary(folder: string, rows: string[][]): VocabularyItem[] {
-  return rows.map(([id, term, meaningVi, exampleEn, exampleVi]) => ({
+  return rows.map(([id, term, meaningVi, exampleEn, exampleVi, phonetic]) => ({
     id,
     term,
+    phonetic,
     meaningVi,
     exampleEn,
     exampleVi,
@@ -74,6 +75,7 @@ export const newSchool: Topic = {
       'cặp sách',
       'My school bag is blue.',
       'Cặp sách của tôi màu xanh.',
+      '/ˈskuːl.bæɡ/',
     ],
     [
       'notebook',
@@ -81,6 +83,7 @@ export const newSchool: Topic = {
       'vở ghi',
       'I write new words in my notebook.',
       'Tôi viết từ mới vào vở ghi.',
+      '/ˈnoʊt.bʊk/',
     ],
     [
       'pencil',
@@ -88,6 +91,7 @@ export const newSchool: Topic = {
       'bút chì',
       'This pencil is long.',
       'Chiếc bút chì này dài.',
+      '/ˈpen.səl/',
     ],
     [
       'ruler',
@@ -95,6 +99,7 @@ export const newSchool: Topic = {
       'thước kẻ',
       'I use a ruler to draw lines.',
       'Tôi dùng thước kẻ để vẽ đường thẳng.',
+      '/ˈruː.lɚ/',
     ],
     [
       'calculator',
@@ -102,6 +107,7 @@ export const newSchool: Topic = {
       'máy tính cầm tay',
       'We use a calculator in maths lessons.',
       'Chúng tôi dùng máy tính cầm tay trong giờ toán.',
+      '/ˈkæl.kjə.leɪ.t̬ɚ/',
     ],
     [
       'classroom',
@@ -109,6 +115,7 @@ export const newSchool: Topic = {
       'phòng học',
       'Our classroom has two doors.',
       'Phòng học của chúng tôi có hai cửa.',
+      '/ˈklæs.ruːm/',
     ],
     [
       'library',
@@ -116,6 +123,7 @@ export const newSchool: Topic = {
       'thư viện',
       'I read books in the library.',
       'Tôi đọc sách trong thư viện.',
+      '/ˈlaɪ.brer.i/',
     ],
     [
       'playground',
@@ -123,6 +131,7 @@ export const newSchool: Topic = {
       'sân chơi',
       'We play in the playground.',
       'Chúng tôi chơi ở sân chơi.',
+      '/ˈpleɪ.ɡraʊnd/',
     ],
     [
       'uniform',
@@ -130,6 +139,7 @@ export const newSchool: Topic = {
       'đồng phục',
       'We wear a uniform at school.',
       'Chúng tôi mặc đồng phục ở trường.',
+      '/ˈjuː.nə.fɔːrm/',
     ],
   ]),
   grammar: grammar([
@@ -410,6 +420,7 @@ export const house: Topic = {
       'giường',
       'The bed is next to the window.',
       'Chiếc giường ở cạnh cửa sổ.',
+      '/bed/',
     ],
     [
       'sofa',
@@ -417,6 +428,7 @@ export const house: Topic = {
       'ghế sô pha',
       'The sofa is in the living room.',
       'Ghế sô pha ở trong phòng khách.',
+      '/ˈsoʊ.fə/',
     ],
     [
       'table',
@@ -424,6 +436,7 @@ export const house: Topic = {
       'bàn',
       'The books are on the table.',
       'Những quyển sách ở trên bàn.',
+      '/ˈteɪ.bəl/',
     ],
     [
       'chair',
@@ -431,6 +444,7 @@ export const house: Topic = {
       'ghế',
       'The chair is behind the table.',
       'Chiếc ghế ở phía sau bàn.',
+      '/tʃer/',
     ],
     [
       'lamp',
@@ -438,6 +452,7 @@ export const house: Topic = {
       'đèn',
       'The lamp is on my desk.',
       'Chiếc đèn ở trên bàn học của tôi.',
+      '/læmp/',
     ],
     [
       'kitchen',
@@ -445,6 +460,7 @@ export const house: Topic = {
       'nhà bếp',
       'My mother is in the kitchen.',
       'Mẹ tôi đang ở trong bếp.',
+      '/ˈkɪtʃ.ən/',
     ],
     [
       'bedroom',
@@ -452,6 +468,7 @@ export const house: Topic = {
       'phòng ngủ',
       'My bedroom is small.',
       'Phòng ngủ của tôi nhỏ.',
+      '/ˈbed.ruːm/',
     ],
     [
       'bathroom',
@@ -459,6 +476,7 @@ export const house: Topic = {
       'phòng tắm',
       'The bathroom is upstairs.',
       'Phòng tắm ở tầng trên.',
+      '/ˈbæθ.ruːm/',
     ],
     [
       'wardrobe',
@@ -466,6 +484,7 @@ export const house: Topic = {
       'tủ quần áo',
       'My clothes are in the wardrobe.',
       'Quần áo của tôi ở trong tủ.',
+      '/ˈwɔːr.droʊb/',
     ],
   ]),
   grammar: grammar([
@@ -731,14 +750,29 @@ export const friends: Topic = {
   grammarCautionVi:
     'Không bỏ am/is/are: She is reading, không viết She reading. Sau is not dùng reading, không dùng read.',
   vocabulary: vocabulary('my-friends', [
-    ['hair', 'hair', 'tóc', 'She has long hair.', 'Bạn ấy có mái tóc dài.'],
-    ['eyes', 'eyes', 'đôi mắt', 'He has brown eyes.', 'Bạn ấy có đôi mắt nâu.'],
+    [
+      'hair',
+      'hair',
+      'tóc',
+      'She has long hair.',
+      'Bạn ấy có mái tóc dài.',
+      '/her/',
+    ],
+    [
+      'eyes',
+      'eyes',
+      'đôi mắt',
+      'He has brown eyes.',
+      'Bạn ấy có đôi mắt nâu.',
+      '/aɪz/',
+    ],
     [
       'nose',
       'nose',
       'mũi',
       'She has a small nose.',
       'Bạn ấy có chiếc mũi nhỏ.',
+      '/noʊz/',
     ],
     [
       'mouth',
@@ -746,6 +780,7 @@ export const friends: Topic = {
       'miệng',
       'He has a wide mouth.',
       'Bạn ấy có khuôn miệng rộng.',
+      '/maʊθ/',
     ],
     [
       'ears',
@@ -753,6 +788,7 @@ export const friends: Topic = {
       'đôi tai',
       'We listen with our ears.',
       'Chúng ta nghe bằng tai.',
+      '/ɪrz/',
     ],
     [
       'kind',
@@ -760,6 +796,7 @@ export const friends: Topic = {
       'tốt bụng',
       'My friend is kind and helps me.',
       'Bạn tôi tốt bụng và giúp đỡ tôi.',
+      '/kaɪnd/',
     ],
     [
       'friendly',
@@ -767,6 +804,7 @@ export const friends: Topic = {
       'thân thiện',
       'Our new classmate is friendly.',
       'Bạn cùng lớp mới của chúng tôi thân thiện.',
+      '/ˈfrend.li/',
     ],
     [
       'creative',
@@ -774,6 +812,7 @@ export const friends: Topic = {
       'sáng tạo',
       'Mai is creative and draws beautiful pictures.',
       'Mai sáng tạo và vẽ những bức tranh đẹp.',
+      '/kriˈeɪ.t̬ɪv/',
     ],
     [
       'confident',
@@ -781,6 +820,7 @@ export const friends: Topic = {
       'tự tin',
       'Nam is confident when he speaks English.',
       'Nam tự tin khi nói tiếng Anh.',
+      '/ˈkɑːn.fə.dənt/',
     ],
   ]),
   grammar: grammar([

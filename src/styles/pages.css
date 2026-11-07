@@ -411,6 +411,11 @@
   margin: 20px 0 8px;
   line-height: 1.25;
 }
+.phonetic {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
 .meaning {
   font-size: 1.05rem;
   margin-bottom: 24px;

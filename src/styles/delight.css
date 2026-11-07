@@ -1,0 +1,194 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+.explorer-clouds {
+  position: absolute;
+  top: 0;
+  right: -12px;
+  width: 54%;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: -1;
+}
+.home-topic-map {
+  position: relative;
+  padding: 12px;
+}
+.home-topic-map::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 28px;
+  background: var(--soft-green);
+  transform: rotate(-1.5deg);
+  z-index: -1;
+}
+.home-topic-map a {
+  transition:
+    transform 200ms var(--ease),
+    box-shadow 200ms var(--ease);
+}
+.home-topic-map a:nth-of-type(odd) {
+  transform: rotate(-1deg);
+}
+.home-topic-map a:nth-of-type(even) {
+  transform: rotate(1deg);
+}
+.home-topic-map a:hover,
+.home-topic-map a:focus-visible {
+  transform: translateY(-4px) rotate(0deg);
+  box-shadow: 0 8px 16px #182e3512;
+}
+.explorer-compass {
+  position: absolute;
+  z-index: 1;
+  right: -10px;
+  top: -18px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  background: #fff3da;
+  color: #7c571a;
+  border: 1px solid #e7d6a9;
+  border-radius: 50%;
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+.map-legend {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  color: var(--teal);
+  font-size: 0.75rem;
+  padding: 8px 0 0;
+}
+.journey-steps {
+  position: relative;
+  isolation: isolate;
+}
+.journey-steps::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: calc(33.333% - 37px);
+  border-top: 2px dashed #c8d9cc;
+  z-index: -1;
+}
+.journey-steps li {
+  flex-direction: column;
+}
+.journey-steps li > span {
+  border: 3px solid #fafcfb;
+  width: 42px;
+  height: 42px;
+}
+.journey-steps li:nth-child(2) > span {
+  background: #fff0cf;
+  color: #7c571a;
+}
+.journey-steps li:nth-child(3) > span {
+  background: var(--soft-blue);
+  color: var(--blue-dark);
+}
+.quest-key-count {
+  background: #fff3da;
+  color: #7c571a;
+}
+.background-music {
+  position: relative;
+  flex-shrink: 0;
+}
+.music-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+}
+.music-toggle:hover,
+.music-enabled {
+  background: var(--soft-green);
+  color: var(--teal);
+  border-color: #92b9a6;
+}
+.music-message {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  top: 100%;
+  width: 230px;
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+@media (max-width: 767px) {
+  .journey-steps li {
+    flex-direction: row;
+  }
+  .journey-steps::before {
+    top: 18px;
+    bottom: 18px;
+    right: auto;
+    left: 20px;
+    border-top: 0;
+    border-left: 2px dashed #c8d9cc;
+  }
+  .explorer-clouds {
+    width: 80%;
+    top: 0;
+    right: 0;
+  }
+}
+@media (max-width: 600px) {
+  .header-inner .background-music {
+    margin-left: auto;
+    order: 0;
+  }
+  .site-header nav {
+    order: 1;
+  }
+  .music-toggle {
+    padding: 8px;
+    font-size: 0.72rem;
+  }
+  .home-topic-map {
+    padding: 8px;
+  }
+  .explorer-compass {
+    right: -4px;
+    top: -14px;
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-topic-map a {
+    transition: none;
+  }
+  .home-topic-map a:hover,
+  .home-topic-map a:focus-visible {
+    transform: none;
+  }
+}
+[data-reduced-motion='true'] .home-topic-map a {
+  transition: none;
+}
+[data-reduced-motion='true'] .home-topic-map a:hover,
+[data-reduced-motion='true'] .home-topic-map a:focus-visible {
+  transform: none;
+}

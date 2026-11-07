@@ -14,6 +14,7 @@ const words = [
     'n.',
     'We can see beautiful paintings at the art gallery.',
     'Chúng ta có thể ngắm những bức tranh đẹp tại phòng trưng bày nghệ thuật.',
+    '/ˈɑːrt ˌɡæl.ɚ.i/',
   ],
   [
     'cathedral',
@@ -22,6 +23,7 @@ const words = [
     'n.',
     'The cathedral is near the square.',
     'Nhà thờ lớn ở gần quảng trường.',
+    '/kəˈθiː.drəl/',
   ],
   [
     'railway-station',
@@ -30,6 +32,7 @@ const words = [
     'n.',
     'My father is waiting at the railway station.',
     'Bố tôi đang đợi ở nhà ga xe lửa.',
+    '/ˈreɪl.weɪ ˌsteɪ.ʃən/',
   ],
   [
     'temple',
@@ -38,6 +41,7 @@ const words = [
     'n.',
     'The temple is very old.',
     'Ngôi đền rất cổ.',
+    '/ˈtem.pəl/',
   ],
   [
     'square',
@@ -46,6 +50,7 @@ const words = [
     'n.',
     'Many people meet in the square.',
     'Nhiều người gặp nhau ở quảng trường.',
+    '/skwer/',
   ],
   [
     'crowded',
@@ -54,6 +59,7 @@ const words = [
     'adj.',
     'The street is crowded in the morning.',
     'Con phố đông đúc vào buổi sáng.',
+    '/ˈkraʊ.dɪd/',
   ],
   [
     'modern',
@@ -62,6 +68,7 @@ const words = [
     'adj.',
     'Our city has many modern buildings.',
     'Thành phố của chúng tôi có nhiều tòa nhà hiện đại.',
+    '/ˈmɑː.dɚn/',
   ],
   [
     'peaceful',
@@ -70,6 +77,7 @@ const words = [
     'adj.',
     'My neighbourhood is peaceful at night.',
     'Khu phố của tôi yên bình vào ban đêm.',
+    '/ˈpiːs.fəl/',
   ],
   [
     'busy',
@@ -78,12 +86,14 @@ const words = [
     'adj.',
     'This road is busy during rush hour.',
     'Con đường này nhộn nhịp vào giờ cao điểm.',
+    '/ˈbɪz.i/',
   ],
 ];
 export const vocabulary: VocabularyItem[] = words.map(
-  ([id, term, meaningVi, partOfSpeech, exampleEn, exampleVi]) => ({
+  ([id, term, meaningVi, partOfSpeech, exampleEn, exampleVi, phonetic]) => ({
     id,
     term,
+    phonetic,
     meaningVi,
     partOfSpeech,
     exampleEn,

@@ -6,6 +6,8 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
+  Compass,
+  KeyRound,
   MapPin,
   Route,
   Sparkles,
@@ -78,6 +80,12 @@ export function HomePage() {
   return (
     <>
       <section className="hero">
+        <img
+          className="explorer-clouds"
+          src="/images/explorer-clouds.svg"
+          alt=""
+          aria-hidden="true"
+        />
         <div className="hero-copy">
           <h1>
             Học tiếng Anh từ <span>những điều quen thuộc</span>
@@ -102,6 +110,9 @@ export function HomePage() {
           </p>
         </div>
         <div className="home-topic-map" aria-label="Khám phá bốn chủ đề">
+          <span className="explorer-compass" aria-hidden="true">
+            <Compass size={32} />
+          </span>
           {topics.map((item) => (
             <Link key={item.id} to={`/topics/${item.id}`}>
               <img src={item.imagePath} alt={item.imageAlt} />
@@ -111,6 +122,11 @@ export function HomePage() {
               </span>
             </Link>
           ))}
+          <div className="map-legend">
+            <MapPin size={16} />
+            {topics.length} chủ đề <span aria-hidden="true">·</span>
+            <KeyRound size={16} />3 chìa khóa mỗi hành trình
+          </div>
         </div>
       </section>
       <section className="learning-section">
@@ -275,6 +291,10 @@ export function VocabularyLesson({
               <span className="pill">{item.partOfSpeech}</span>
             </span>
             <h2 lang="en">{item.term}</h2>
+            <p className="phonetic" lang="en-US">
+              <span className="small muted">IPA (US) </span>
+              {item.phonetic}
+            </p>
             <p className="meaning">{item.meaningVi}</p>
             <SpeechButton text={item.term} />
             <div className="example">

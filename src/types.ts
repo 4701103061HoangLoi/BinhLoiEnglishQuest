@@ -3,6 +3,7 @@ export type GameMode = 'challenge' | 'practice';
 export interface VocabularyItem {
   id: string;
   term: string;
+  phonetic: string;
   meaningVi: string;
   partOfSpeech: string;
   exampleEn: string;

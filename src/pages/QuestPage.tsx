@@ -287,7 +287,8 @@ function QuestStudy({
           progress.viewedGrammarIds.includes(`${topic.id}:${rule.id}`),
         )
       : viewed === words.length;
-  const [studyOpen, setStudyOpen] = useState(!ready);
+  const [studyOpen, setStudyOpen] = useState(true);
+  const [entered, setEntered] = useState(false);
   return (
     <>
       <details
@@ -309,6 +310,7 @@ function QuestStudy({
           <button
             className="button secondary"
             onClick={(event) => {
+              setEntered(true);
               setStudyOpen(false);
               event.currentTarget
                 .closest('details')
@@ -320,7 +322,7 @@ function QuestStudy({
           </button>
         )}
       </details>
-      {!ready ? (
+      {!ready || !entered ? (
         <QuestGuide
           hint={
             stage === 2
@@ -328,8 +330,9 @@ function QuestStudy({
               : 'Bấm Tiếp hoặc chọn từ trong Danh sách từ để xem đủ bài của chặng này.'
           }
         >
-          Xem trước bài học của chặng này. Khi đã xem đủ{' '}
-          {stage === 2 ? 'bài ngữ pháp' : 'các từ'}, nhiệm vụ bên dưới sẽ mở.
+          {ready
+            ? 'Bạn đã xem đủ bài. Bấm Vào nhiệm vụ khi muốn bắt đầu.'
+            : 'Xem đủ bài học của chặng này, rồi bấm Vào nhiệm vụ để bắt đầu.'}
         </QuestGuide>
       ) : (
         <>

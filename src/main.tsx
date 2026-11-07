@@ -5,6 +5,7 @@ import './styles/global.css';
 import './styles/pages.css';
 import './styles/games.css';
 import './styles/quest.css';
+import './styles/delight.css';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

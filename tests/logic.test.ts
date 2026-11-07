@@ -95,9 +95,10 @@ describe('content and randomization', () => {
       expect(topic.vocabulary).toHaveLength(9);
       expect(topic.grammar.length).toBeGreaterThan(0);
       expect(existsSync(`public${topic.imagePath}`)).toBe(true);
-      topic.vocabulary.forEach((word) =>
-        expect(existsSync(`public${word.imagePath}`)).toBe(true),
-      );
+      topic.vocabulary.forEach((word) => {
+        expect(existsSync(`public${word.imagePath}`)).toBe(true);
+        expect(word.phonetic).toMatch(/^\/[^/]+\/$/u);
+      });
       const questions = createRunQuestions(topic, 42);
       expect(questions.match).toHaveLength(5);
       expect(questions.quiz).toHaveLength(5);

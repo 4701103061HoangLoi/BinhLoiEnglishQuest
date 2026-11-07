@@ -214,7 +214,9 @@ describe('routes and user interactions', () => {
     expect(
       screen.getByRole('heading', { name: 'art gallery' }),
     ).toBeInTheDocument();
+    expect(screen.getByText('/ˈɑːrt ˌɡæl.ɚ.i/')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Tiếp' }));
+    expect(screen.getByText('/kəˈθiː.drəl/')).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'cathedral' }),
     ).toBeInTheDocument();

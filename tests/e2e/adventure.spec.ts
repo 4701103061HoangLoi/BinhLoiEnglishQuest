@@ -108,6 +108,7 @@ for (const topic of topics) {
         .click();
       await expect(page).toHaveURL(/\/quest\/my-new-school$/);
       await expect(page.locator('.quest-key-count')).toContainText('1/3');
+      await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
       await expect(
         page.getByText('Đã hoàn thành một lượt luyện tập trong chặng này.'),
       ).toBeVisible();
@@ -283,6 +284,8 @@ test('inline learning is responsive and uses the same viewed-word progress as fu
   }
   for (let i = 0; i < 2; i++)
     await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
+  await expect(page.locator('.quest-hunt-grid')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
   await expect(page.locator('.quest-hunt-grid')).toBeVisible();
   await page.getByRole('link', { name: 'My New School', exact: true }).click();
   await page
@@ -294,6 +297,8 @@ test('inline learning is responsive and uses the same viewed-word progress as fu
   await page
     .getByRole('link', { name: 'Tiếp tục hành trình', exact: true })
     .click();
+  await expect(page.locator('.quest-hunt-grid')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
   await expect(page.locator('.quest-hunt-grid')).toBeVisible();
   await expect(page.locator('.quest-study')).not.toHaveAttribute('open');
 });

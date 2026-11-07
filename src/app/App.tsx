@@ -24,6 +24,7 @@ import {
   AchievementsPage,
   SettingsPage,
 } from '../pages/ProgressPages';
+import { BackgroundMusic } from '../components/BackgroundMusic';
 import { EmptyState } from '../components/Common';
 import { ProgressProvider, useProgress } from '../contexts/ProgressContext';
 function Layout() {
@@ -70,7 +71,7 @@ function Layout() {
               Cài đặt
             </NavLink>
           </nav>
-          <span className="header-note">Tiếng Anh lớp 6</span>
+          <BackgroundMusic />
         </div>
       </header>
       {error && (

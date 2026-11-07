@@ -65,6 +65,10 @@ describe('pronunciation button', () => {
     expect(
       screen.queryByText(/Không phát được âm thanh/),
     ).not.toBeInTheDocument();
+    expect(document.querySelector('.quest-hunt-grid')).not.toBeInTheDocument();
+    await user.click(document.querySelector('summary')!);
+    expect(document.querySelector('.quest-hunt-grid')).not.toBeInTheDocument();
+    await user.click(document.querySelector('summary')!);
     await user.click(screen.getByRole('button', { name: 'Vào nhiệm vụ' }));
     expect(screen.getByText('pencil', { selector: 'h2' })).not.toBeVisible();
     expect(document.querySelector('.quest-hunt-grid')).toBeVisible();

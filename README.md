@@ -134,7 +134,7 @@ Nhạc hiệu: `src/lib/feedbackAudio.ts`; kiểm thử `tests/audio.test.ts`, `
 
 Thanh điều hướng có tab **Thử thách** (`/challenges`). Chọn chủ đề để chơi Word Match, Quick Quiz và Sentence Builder; có thể mở trực tiếp, không cần bắt đầu Quest. Từ Quest, nút Đến trang Thử thách truyền chủ đề và ngữ cảnh hành trình, giữ nguyên chìa khóa khi chuyển trang. Trang Thử thách có nút quay lại hành trình; trang kết quả có cả Tiếp tục hành trình và Chọn thử thách khác. Bấm quay lại từ game mở trong tab đưa về đúng chủ đề đã chọn.
 
-Trong Quest, phần bài học không tự thu lại khi vừa xem thẻ cuối. Học sinh có thể nghe hoặc xem lại thẻ cuối; bấm **Vào nhiệm vụ** hoặc tự thu phần học khi sẵn sàng. Việc chuyển từ trong lúc phát âm vẫn hủy lượt đọc trước an toàn. Kiểm thử tại `tests/speech.test.tsx`, `tests/e2e/challenges.spec.ts` và `tests/e2e/adventure.spec.ts`.
+Trong Quest, phần bài học không tự thu lại khi vừa xem thẻ cuối. Học sinh có thể nghe hoặc xem lại thẻ cuối; câu hỏi chỉ xuất hiện sau khi bấm **Vào nhiệm vụ**. Tự thu phần học hoặc xem đủ từ không mở câu hỏi. Khi quay lại chặng đã học, vẫn cần bấm nút này để bắt đầu nhiệm vụ. Việc chuyển từ trong lúc phát âm vẫn hủy lượt đọc trước an toàn. Kiểm thử tại `tests/speech.test.tsx`, `tests/e2e/challenges.spec.ts` và `tests/e2e/adventure.spec.ts`.
 
 ## Câu chữ giao diện
 
@@ -153,3 +153,15 @@ Bổ sung câu hỏi bằng cách thêm hàng vào mảng quiz/sentences trong t
 Trong Sentence Builder và mật thư Quest, từ bay từ kho lên vị trí trong câu khi chọn, rồi bay xuống đúng ô cũ khi bỏ chọn. Làm lại câu/Xếp lại đưa toàn bộ từ đang chọn về kho. Chuyển động kéo dài 280 ms và không trì hoãn việc cập nhật đáp án; dùng được bằng chạm và bàn phím. Khi bật Giảm chuyển động trong Cài đặt hoặc hệ điều hành, từ chuyển vị trí ngay. Trình duyệt không hỗ trợ Web Animations vẫn thao tác bình thường. Hiệu ứng đang chạy được hủy khi chuyển câu hoặc rời màn chơi.
 
 Hook dùng chung: `src/games/useTokenFlight.ts`. Kiểm thử thao tác chọn/bỏ nhanh, đặt lại câu và hai tùy chọn giảm chuyển động: `tests/e2e/token-flight.spec.ts`.
+
+## Trang trí và nhạc nền
+
+Trang chủ có chi tiết mây, la bàn và các thẻ chủ đề dạng bản đồ; đường nét đứt nối ba chặng học. Hiệu ứng di chuyển thẻ khi trỏ/chọn tôn trọng Giảm chuyển động của thiết bị và Cài đặt.
+
+Nút **Nhạc nền** ở đầu trang điều khiển bản nhạc không lời cục bộ, lặp 20 giây. Nhạc được tạo riêng cho dự án tại `public/audio/exploration.wav` (khoảng 862 KiB); không phụ thuộc dịch vụ ngoài. Mặc định tắt, chỉ tải/phát khi bấm bật. Nhạc tiếp tục khi chuyển trang trong ứng dụng, tạm dừng khi tab bị ẩn và tiếp tục khi quay lại nếu vẫn bật. Tải lại trang sẽ tắt nhạc để người dùng chủ động bật lại. Nút này độc lập với âm báo đúng/sai và phát âm. Nếu trình duyệt chặn phát hoặc tiếp tục nhạc, bấm bật lại.
+
+Điều khiển nhạc: `src/components/BackgroundMusic.tsx`; trang trí: `src/styles/delight.css`, `public/images/explorer-clouds.svg`. Kiểm thử bật/tắt, lỗi phát, tạm dừng và chuyển trang nằm trong `tests/music.test.tsx`, `tests/e2e/music.spec.ts`. Khi deploy, chép toàn bộ `dist/`, bao gồm thư mục `audio/`.
+
+## Phiên âm từ vựng
+
+Cả 36 từ của bốn chủ đề có phiên âm IPA Anh-Mỹ, hiển thị dưới từ tiếng Anh trong trang từ vựng và phần học của Quest. Phiên âm được lưu cục bộ trong trường `phonetic` của mỗi từ; khi thêm từ, điền phiên âm trong dấu `/…/` ở cuối hàng dữ liệu từ vựng. Tham khảo cách ghi IPA tại [Cambridge Dictionary](https://dictionary.cambridge.org/pronunciation/english/). Nút nghe vẫn đọc từ bằng giọng `en-US` có sẵn trên thiết bị; giọng thực tế tùy hệ điều hành.
