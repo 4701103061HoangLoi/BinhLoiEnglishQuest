@@ -19,7 +19,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'npm run build && node server/index.mjs',
+      command: 'npm run build && npm start',
       env: {
         PORT: '3011',
         LEADERBOARD_FILE: `/tmp/bleq-e2e-${process.pid}.json`,

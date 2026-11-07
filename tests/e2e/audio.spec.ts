@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { newSchool } from '../../src/data/firstUnits';
+import { newSchool } from '../../frontend/src/data/firstUnits';
 
 test('answer melodies play only after answers and respect persisted mute', async ({
   page,

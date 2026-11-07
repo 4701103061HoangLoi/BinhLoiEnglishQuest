@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { newSchool } from '../../src/data/firstUnits';
+import { newSchool } from '../../frontend/src/data/firstUnits';
 const origin = 'http://127.0.0.1:3011';
 async function playAndPublish(page: Page, nickname: string) {
   await page.goto(`${origin}/play/my-new-school/quick-quiz`);

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { newSchool } from '../../src/data/firstUnits';
+import { newSchool } from '../../frontend/src/data/firstUnits';
 
 test('Mây reacts to answers, offers help and respects reduced motion', async ({
   page,

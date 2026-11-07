@@ -20,7 +20,7 @@ const mount = () =>
   );
 describe('shared leaderboard', () => {
   it('keeps server categories and time limits aligned with game data', () => {
-    const rules = JSON.parse(readFileSync('server/rules.json', 'utf8'));
+    const rules = JSON.parse(readFileSync('../backend/src/rules.json', 'utf8'));
     expect(rules.topics).toEqual(topics.map((topic) => topic.id));
     expect(rules.games).toEqual(
       Object.fromEntries(

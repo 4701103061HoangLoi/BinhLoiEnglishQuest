@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
-import { neighbourhood } from '../../src/data/neighbourhood';
-import { newSchool } from '../../src/data/firstUnits';
+import { neighbourhood } from '../../frontend/src/data/neighbourhood';
+import { newSchool } from '../../frontend/src/data/firstUnits';
 test('complete all games, persist badges and recover routes', async ({
   page,
 }) => {

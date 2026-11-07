@@ -9,7 +9,8 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createQuestServer, validateSubmission } from '../server/index.mjs';
+import { createQuestServer } from '../src/app.mjs';
+import { validateSubmission } from '../src/validation.mjs';
 const run = {
   topicId: 'my-new-school',
   gameId: 'quick-quiz',

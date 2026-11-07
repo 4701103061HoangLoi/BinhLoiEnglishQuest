@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { newSchool, house, friends } from '../../src/data/firstUnits';
+import { newSchool, house, friends } from '../../frontend/src/data/firstUnits';
 
 for (const topic of [newSchool, house, friends]) {
   test(`${topic.titleEn}: lessons, all games and saved progress`, async ({

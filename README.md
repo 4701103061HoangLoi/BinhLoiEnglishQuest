@@ -10,7 +10,7 @@ Node.js **20.19+** hoặc **22.12+**; môi trường triển khai đã dùng Nod
 npm install
 npm run dev       # http://localhost:5173
 npm run test      # Vitest + React Testing Library
-npm run build     # kiểm tra TypeScript strict, tạo dist/
+npm run build     # kiểm tra TypeScript strict, tạo frontend/dist/
 npm run preview   # xem bản production tại http://localhost:4173
 ```
 
@@ -37,16 +37,16 @@ Phát âm luôn cần thao tác người dùng, không tự phát khi chuyển t
 
 ## Cấu trúc và mở rộng nội dung
 
-- `src/data/neighbourhood.ts`: topic, 9 từ, bài giảng, quiz và câu xếp từ.
-- `src/types.ts`: kiểu dữ liệu dùng chung.
-- `src/lib/gameLogic.ts`: shuffle theo seed, chấm điểm, so khớp câu, huy hiệu và đồng hồ; hàm thuần.
-- `src/games/useGame.ts`: trạng thái lượt chơi, chặn nộp hai lần, kết thúc và timeout.
-- `src/lib/storage.ts`, `src/contexts/ProgressContext.tsx`: kiểm tra schema, đọc/ghi an toàn.
-- `src/pages`, `src/components`, `src/styles`: giao diện, routes, CSS responsive.
-- `public/images/neighbourhood/`: 9 SVG riêng; `neighbourhood-map.svg`: bản đồ trang chủ.
-- `tests/*.test.ts(x)`: logic, persistence, game interactions, routes, xác nhận thoát/xóa.
+- `frontend/src/data/neighbourhood.ts`: topic, 9 từ, bài giảng, quiz và câu xếp từ.
+- `frontend/src/types.ts`: kiểu dữ liệu dùng chung.
+- `frontend/src/lib/gameLogic.ts`: shuffle theo seed, chấm điểm, so khớp câu, huy hiệu và đồng hồ; hàm thuần.
+- `frontend/src/games/useGame.ts`: trạng thái lượt chơi, chặn nộp hai lần, kết thúc và timeout.
+- `frontend/src/lib/storage.ts`, `frontend/src/contexts/ProgressContext.tsx`: kiểm tra schema, đọc/ghi an toàn.
+- `frontend/src/pages`, `frontend/src/components`, `frontend/src/styles`: giao diện, routes, CSS responsive.
+- `frontend/public/images/neighbourhood/`: 9 SVG riêng; `neighbourhood-map.svg`: bản đồ trang chủ.
+- `frontend/tests/*.test.ts(x)`: logic, persistence, game interactions, routes, xác nhận thoát/xóa.
 
-Để thêm chủ đề: tạo dữ liệu theo `Topic`, thêm vào mảng `topics`, cung cấp ít nhất 5 từ có hình, 5 câu quiz, 5 câu xếp từ và bài giảng. Cấp ID ổn định, duy nhất; `correctOptionId` trỏ đến một option thực. Mỗi token có ID riêng ngay cả khi chữ lặp. Hình lưu dưới `public/images/<topic>/`. Chạy `validateTopic` và thêm test cho nội dung mới. Các route học/game dùng topic ID tự động; khai báo hình và thông tin bài học riêng trong Topic. Word Match chọn ngẫu nhiên 5 từ, chọn 5 câu ngẫu nhiên cho hai game còn lại.
+Để thêm chủ đề: tạo dữ liệu theo `Topic`, thêm vào mảng `topics`, cung cấp ít nhất 5 từ có hình, 5 câu quiz, 5 câu xếp từ và bài giảng. Cấp ID ổn định, duy nhất; `correctOptionId` trỏ đến một option thực. Mỗi token có ID riêng ngay cả khi chữ lặp. Hình lưu dưới `frontend/public/images/<topic>/`. Chạy `validateTopic` và thêm test cho nội dung mới. Các route học/game dùng topic ID tự động; khai báo hình và thông tin bài học riêng trong Topic. Word Match chọn ngẫu nhiên 5 từ, chọn 5 câu ngẫu nhiên cho hai game còn lại.
 
 Sửa câu hỏi trong data, không hardcode đáp án vào UI. Test xác nhận shuffle giữ đúng ID, câu/token không thiếu, scoring/timeout/nhấp đúp, schema hỏng, quota và giới hạn lưu. Không đặt mục tiêu coverage giả; bổ sung test cho luật hoặc nhánh hành vi mới.
 
@@ -60,9 +60,9 @@ Chọn tại `/topics`; mỗi chủ đề có 9 từ kèm SVG cục bộ, 5 quy 
 | My House · Unit 2      | `/topics/my-house`      | Sở hữu cách và giới từ vị trí     |
 | My Friends · Unit 3    | `/topics/my-friends`    | Hiện tại tiếp diễn                |
 
-Ảnh đại diện chủ đề dùng SVG bản đồ cục bộ: `public/images/my-new-school-map.svg`, `my-house-map.svg`, `my-friends-map.svg`, đồng bộ phong cách với Neighbourhood.
+Ảnh đại diện chủ đề dùng SVG bản đồ cục bộ: `frontend/public/images/my-new-school-map.svg`, `my-house-map.svg`, `my-friends-map.svg`, đồng bộ phong cách với Neighbourhood.
 
-Nội dung mới nằm trong `src/data/firstUnits.ts`; đăng ký chủ đề trong `topics` tại `src/data/neighbourhood.ts`. `Topic` có tiêu đề, mô tả, ví dụ, lưu ý ngữ pháp và hình riêng; các trang đọc trực tiếp các trường này. Khi thêm chủ đề, cung cấp đủ các trường theo `src/types.ts` và SVG cục bộ. Bài học và trò chơi của My Neighbourhood vẫn giữ nguyên, dữ liệu schema v1 không cần chuyển đổi. Các ID từ/bài được lưu kèm topic ID nên tiến độ không lẫn giữa các chủ đề.
+Nội dung mới nằm trong `frontend/src/data/firstUnits.ts`; đăng ký chủ đề trong `topics` tại `frontend/src/data/neighbourhood.ts`. `Topic` có tiêu đề, mô tả, ví dụ, lưu ý ngữ pháp và hình riêng; các trang đọc trực tiếp các trường này. Khi thêm chủ đề, cung cấp đủ các trường theo `frontend/src/types.ts` và SVG cục bộ. Bài học và trò chơi của My Neighbourhood vẫn giữ nguyên, dữ liệu schema v1 không cần chuyển đổi. Các ID từ/bài được lưu kèm topic ID nên tiến độ không lẫn giữa các chủ đề.
 
 `tests/e2e/topics.spec.ts` kiểm tra cả 9 lượt chơi mới, học từ/ngữ pháp, tải lại kết quả, lọc thành tích và tách biệt tiến độ.
 
@@ -74,9 +74,9 @@ Storage bị chặn/đầy: vẫn chơi trong bộ nhớ và có cảnh báo. JS
 
 ## Deploy static
 
-`npm run build`, đưa `dist/` lên hosting. Netlify: build command `npm run build`, publish `dist`; `public/_redirects` đã cấu hình fallback SPA. Vercel: Vite preset, output `dist`; `vercel.json` có rewrite cho route. Hosting khác phải rewrite URL không phải file về `index.html` để refresh `/play/...` hoạt động. Cấu hình hiện tại phục vụ tại domain root; subpath cần chỉnh Vite `base`, router basename và đường dẫn asset.
+`npm run build`, đưa `frontend/dist/` lên hosting. Netlify: build command `npm run build`, publish `frontend/dist`; `frontend/public/_redirects` đã cấu hình fallback SPA. Vercel: Vite preset, output `dist`; `frontend/vercel.json` có rewrite cho route. Hosting khác phải rewrite URL không phải file về `index.html` để refresh `/play/...` hoạt động. Cấu hình hiện tại phục vụ tại domain root; subpath cần chỉnh Vite `base`, router basename và đường dẫn asset.
 
-Bản static vẫn học và chơi được, nhưng bảng xếp hạng cần máy chủ bên dưới; chỉ chép `dist/` sẽ không có API lưu điểm chung. Không cam kết PWA/offline reload. Không triển khai Speaking, Listening, AI, Supabase hay đăng nhập.
+Bản static vẫn học và chơi được, nhưng bảng xếp hạng cần máy chủ bên dưới; chỉ chép `frontend/dist/` sẽ không có API lưu điểm chung. Không cam kết PWA/offline reload. Không triển khai Speaking, Listening, AI, Supabase hay đăng nhập.
 
 ## Kiểm tra demo
 
@@ -108,13 +108,13 @@ Chìa khóa được lưu sau từng chặng trong `questCheckpoints` (trường
 
 Trang chủ và trang chủ đề dùng chung `JourneyOverview`; không còn tách Quest và Học trước/Thử sức thành hai nhánh. Hai trang bài học cũ vẫn dùng được và có nút trở về hành trình; nội dung bài học và tiến độ dùng chung với Quest.
 
-Câu chuyện: `src/data/quests.ts`. Luật ghép thẻ: `src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đã học ở chặng đầu để tìm hình theo thứ tự ngẫu nhiên, ba từ chọn ngẫu nhiên trong sáu từ còn lại để ghép thẻ, và một câu ngẫu nhiên trong 20 câu xếp từ để làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.
+Câu chuyện: `frontend/src/data/quests.ts`. Luật ghép thẻ: `frontend/src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đã học ở chặng đầu để tìm hình theo thứ tự ngẫu nhiên, ba từ chọn ngẫu nhiên trong sáu từ còn lại để ghép thẻ, và một câu ngẫu nhiên trong 20 câu xếp từ để làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.
 
 ## Nhân vật đồng hành Mây
 
 Mây xuất hiện trong Quest, ba game và phần chơi thử. Nhân vật đổi nét mặt và cử chỉ theo phản hồi: sẵn sàng, cổ vũ khi đúng, cùng suy nghĩ khi sai, ăn mừng khi nhận chìa khóa hoặc mở rương. Chạm nhân vật hoặc dùng Tab/Enter để mở/đóng lời nhắc cách chơi. Mây không tự phát âm thanh và không thay đổi cách tính điểm. Chuyển động ngắn tôn trọng cả `prefers-reduced-motion` lẫn tùy chọn Giảm chuyển động trong Cài đặt.
 
-Nhân vật là SVG cục bộ trong `src/components/QuestGuide.tsx`; CSS tại `src/styles/guide.css`. Lời thoại lấy từ trạng thái trả lời hiện có. Kiểm thử bàn phím, biểu cảm, phản hồi và giảm chuyển động nằm trong `tests/guide.test.tsx`, `tests/e2e/guide.spec.ts`.
+Nhân vật là SVG cục bộ trong `frontend/src/components/QuestGuide.tsx`; CSS tại `frontend/src/styles/guide.css`. Lời thoại lấy từ trạng thái trả lời hiện có. Kiểm thử bàn phím, biểu cảm, phản hồi và giảm chuyển động nằm trong `tests/guide.test.tsx`, `tests/e2e/guide.spec.ts`.
 
 ## Xáo trộn câu hỏi và đáp án
 
@@ -128,7 +128,7 @@ Trả lời đúng phát giai điệu chúc mừng ngắn; trả lời sai phát
 
 Nút phát âm có thể bấm lại để đọc từ từ đầu: lượt cũ được hủy, thông báo hủy/ngắt không được xem là lỗi. Callback từ lượt cũ hoặc từ trước đó không thể ghi đè trạng thái lượt mới; lỗi thật vẫn được thông báo và xóa khi thử lại. API âm thanh bị chặn hoặc không hỗ trợ không ảnh hưởng việc trả lời, tính điểm hay lưu tiến độ. Cần thử nghe trên thiết bị thật, đặc biệt iOS và thiết bị chưa cài giọng English.
 
-Nhạc hiệu: `src/lib/feedbackAudio.ts`; kiểm thử `tests/audio.test.ts`, `tests/e2e/audio.spec.ts`. Phát âm: `SpeechButton` trong `src/components/Common.tsx`; kiểm thử hồi quy bấm liên tiếp và chuyển từ tại `tests/speech.test.tsx`.
+Nhạc hiệu: `frontend/src/lib/feedbackAudio.ts`; kiểm thử `tests/audio.test.ts`, `tests/e2e/audio.spec.ts`. Phát âm: `SpeechButton` trong `frontend/src/components/Common.tsx`; kiểm thử hồi quy bấm liên tiếp và chuyển từ tại `tests/speech.test.tsx`.
 
 ## Tab Thử thách và chuyển từ vựng
 
@@ -142,7 +142,7 @@ Dùng tiếng Việt ngắn, cụ thể cho hướng dẫn và phản hồi; gi�
 
 ## Bộ câu hỏi mở rộng
 
-Mỗi chủ đề có **20 câu Quick Quiz và 20 câu Sentence Builder**: tổng cộng 160 câu cho bốn chủ đề. Nội dung nằm trực tiếp trong `src/data/firstUnits.ts` và `src/data/neighbourhood.ts`, kèm đáp án và giải thích tiếng Việt. Câu mới được thêm sau các câu cũ để giữ nguyên ID và không ảnh hưởng lịch sử đã lưu.
+Mỗi chủ đề có **20 câu Quick Quiz và 20 câu Sentence Builder**: tổng cộng 160 câu cho bốn chủ đề. Nội dung nằm trực tiếp trong `frontend/src/data/firstUnits.ts` và `frontend/src/data/neighbourhood.ts`, kèm đáp án và giải thích tiếng Việt. Câu mới được thêm sau các câu cũ để giữ nguyên ID và không ảnh hưởng lịch sử đã lưu.
 
 Mỗi lượt chơi chọn 5 câu khác nhau bằng seed mới; trộn thứ tự câu hỏi, đáp án và mảnh từ. Word Match lấy 5 từ khác nhau từ cả 9 từ của chủ đề. Quest chọn ngẫu nhiên một mật thư từ 20 câu và 3 cặp thẻ từ nhóm đã học; câu được giữ nguyên khi đang trả lời. Chơi thử dùng cả 9 từ Unit 1. Các lượt độc lập vẫn có thể gặp lại một số câu cũ.
 
@@ -152,15 +152,15 @@ Bổ sung câu hỏi bằng cách thêm hàng vào mảng quiz/sentences trong t
 
 Trong Sentence Builder và mật thư Quest, từ bay từ kho lên vị trí trong câu khi chọn, rồi bay xuống đúng ô cũ khi bỏ chọn. Làm lại câu/Xếp lại đưa toàn bộ từ đang chọn về kho. Chuyển động kéo dài 280 ms và không trì hoãn việc cập nhật đáp án; dùng được bằng chạm và bàn phím. Khi bật Giảm chuyển động trong Cài đặt hoặc hệ điều hành, từ chuyển vị trí ngay. Trình duyệt không hỗ trợ Web Animations vẫn thao tác bình thường. Hiệu ứng đang chạy được hủy khi chuyển câu hoặc rời màn chơi.
 
-Hook dùng chung: `src/games/useTokenFlight.ts`. Kiểm thử thao tác chọn/bỏ nhanh, đặt lại câu và hai tùy chọn giảm chuyển động: `tests/e2e/token-flight.spec.ts`.
+Hook dùng chung: `frontend/src/games/useTokenFlight.ts`. Kiểm thử thao tác chọn/bỏ nhanh, đặt lại câu và hai tùy chọn giảm chuyển động: `tests/e2e/token-flight.spec.ts`.
 
 ## Trang trí và nhạc nền
 
 Trang chủ có chi tiết mây, la bàn và các thẻ chủ đề dạng bản đồ; đường nét đứt nối ba chặng học. Hiệu ứng di chuyển thẻ khi trỏ/chọn tôn trọng Giảm chuyển động của thiết bị và Cài đặt.
 
-Nút **Nhạc nền** ở đầu trang điều khiển bản nhạc không lời cục bộ, lặp 20 giây. Nhạc được tạo riêng cho dự án tại `public/audio/exploration.wav` (khoảng 862 KiB); không phụ thuộc dịch vụ ngoài. Mặc định tắt, chỉ tải/phát khi bấm bật. Nhạc tiếp tục khi chuyển trang trong ứng dụng, tạm dừng khi tab bị ẩn và tiếp tục khi quay lại nếu vẫn bật. Tải lại trang sẽ tắt nhạc để người dùng chủ động bật lại. Nút này độc lập với âm báo đúng/sai và phát âm. Nếu trình duyệt chặn phát hoặc tiếp tục nhạc, bấm bật lại.
+Nút **Nhạc nền** ở đầu trang điều khiển bản nhạc không lời cục bộ, lặp 20 giây. Nhạc được tạo riêng cho dự án tại `frontend/public/audio/exploration.wav` (khoảng 862 KiB); không phụ thuộc dịch vụ ngoài. Mặc định tắt, chỉ tải/phát khi bấm bật. Nhạc tiếp tục khi chuyển trang trong ứng dụng, tạm dừng khi tab bị ẩn và tiếp tục khi quay lại nếu vẫn bật. Tải lại trang sẽ tắt nhạc để người dùng chủ động bật lại. Nút này độc lập với âm báo đúng/sai và phát âm. Nếu trình duyệt chặn phát hoặc tiếp tục nhạc, bấm bật lại.
 
-Điều khiển nhạc: `src/components/BackgroundMusic.tsx`; trang trí: `src/styles/delight.css`, `public/images/explorer-clouds.svg`. Kiểm thử bật/tắt, lỗi phát, tạm dừng và chuyển trang nằm trong `tests/music.test.tsx`, `tests/e2e/music.spec.ts`. Khi deploy, chép toàn bộ `dist/`, bao gồm thư mục `audio/`.
+Điều khiển nhạc: `frontend/src/components/BackgroundMusic.tsx`; trang trí: `frontend/src/styles/delight.css`, `frontend/public/images/explorer-clouds.svg`. Kiểm thử bật/tắt, lỗi phát, tạm dừng và chuyển trang nằm trong `tests/music.test.tsx`, `tests/e2e/music.spec.ts`. Khi deploy, chép toàn bộ `frontend/dist/`, bao gồm thư mục `audio/`.
 
 ## Phiên âm từ vựng
 
@@ -185,12 +185,29 @@ HOST=0.0.0.0 PORT=3001 npm start
 # Mở http://IP-MAY-AO:3001, phục vụ cả web và API
 ```
 
-Máy chủ phục vụ `dist/` và `/api/leaderboard` cùng địa chỉ, có fallback React Router. Mặc định chỉ nghe `127.0.0.1:3001`; dùng `HOST=0.0.0.0` để truy cập LAN. Khi chạy sau reverse proxy HTTPS, giữ Node ở localhost, proxy toàn bộ website tới cổng 3001 và đặt `PUBLIC_ORIGIN=https://ten-mien-cua-ban` (không có dấu `/` cuối) để kiểm tra nguồn yêu cầu và bật cookie Secure. Không dùng `vite preview` làm máy chủ bảng xếp hạng.
+Máy chủ phục vụ `frontend/dist/` và `/api/leaderboard` cùng địa chỉ, có fallback React Router. Mặc định chỉ nghe `127.0.0.1:3001`; dùng `HOST=0.0.0.0` để truy cập LAN. Khi chạy sau reverse proxy HTTPS, giữ Node ở localhost, proxy toàn bộ website tới cổng 3001 và đặt `PUBLIC_ORIGIN=https://ten-mien-cua-ban` (không có dấu `/` cuối) để kiểm tra nguồn yêu cầu và bật cookie Secure. Không dùng `vite preview` làm máy chủ bảng xếp hạng.
 
-Dữ liệu ở `data/leaderboard.json`, không nằm trong `dist/` và không được Git theo dõi. Đổi vị trí bằng `LEADERBOARD_FILE=/duong-dan-co-quyen-ghi/leaderboard.json`. Chạy từ thư mục dự án; dùng systemd hoặc trình quản lý tiến trình để tự khởi động lại `npm start`, với WorkingDirectory đúng và thư mục dữ liệu tồn tại lâu dài. Giữ bản sao lưu file dữ liệu bên ngoài thư mục release; khi cập nhật, không xóa thư mục `data/`. File hỏng sẽ làm máy chủ dừng để bảo toàn dữ liệu; phục hồi bản sao lưu trước khi khởi động lại. Chỉ chạy **một tiến trình Node** ghi cùng file.
+Dữ liệu ở `data/leaderboard.json`, không nằm trong `frontend/dist/` và không được Git theo dõi. Đường dẫn tương đối tính từ gốc repository. Đổi vị trí bằng `LEADERBOARD_FILE=/duong-dan-co-quyen-ghi/leaderboard.json`. Chạy từ thư mục dự án; dùng systemd hoặc trình quản lý tiến trình để tự khởi động lại `npm start`, với WorkingDirectory đúng và thư mục dữ liệu tồn tại lâu dài. Giữ bản sao lưu file dữ liệu bên ngoài thư mục release; khi cập nhật, không xóa thư mục `data/`. File hỏng sẽ làm máy chủ dừng để bảo toàn dữ liệu; phục hồi bản sao lưu trước khi khởi động lại. Chỉ chạy **một tiến trình Node** ghi cùng file.
 
-Máy chủ không thêm thư viện: dùng [HTTP](https://nodejs.org/docs/latest-v20.x/api/http.html) và [filesystem](https://nodejs.org/docs/latest-v20.x/api/fs.html) của Node. Ghi file tạm rồi thay thế file chính; lưu thành công mới báo cho trình duyệt. Cookie HttpOnly chứa mã ngẫu nhiên, máy chủ chỉ lưu hash nhận diện. API giới hạn payload 4 KiB, kiểm tra chủ đề/trò, chế độ, biệt danh, thời gian và công thức điểm; tối đa 5.000 người, giới hạn tần suất ghi. Khi thêm chủ đề hoặc đổi thời gian game, cập nhật `server/rules.json`; test đối chiếu với dữ liệu game.
+Máy chủ không thêm thư viện: dùng [HTTP](https://nodejs.org/docs/latest-v20.x/api/http.html) và [filesystem](https://nodejs.org/docs/latest-v20.x/api/fs.html) của Node. Ghi file tạm rồi thay thế file chính; lưu thành công mới báo cho trình duyệt. Cookie HttpOnly chứa mã ngẫu nhiên, máy chủ chỉ lưu hash nhận diện. API giới hạn payload 4 KiB, kiểm tra chủ đề/trò, chế độ, biệt danh, thời gian và công thức điểm; tối đa 5.000 người, giới hạn tần suất ghi. Khi thêm chủ đề hoặc đổi thời gian game, cập nhật `backend/src/rules.json`; test đối chiếu với dữ liệu game.
 
 **Giới hạn:** điểm vẫn do trình duyệt gửi lên, không xác minh đáp án hoặc danh tính trên máy chủ; có thể tạo thêm danh tính bằng trình duyệt khác. Đây là bảng thi đua học tập, không dùng làm kết quả thi có giải. File JSON và một tiến trình phù hợp quy mô lớp/trường nhỏ; cần cơ sở dữ liệu và xác minh lượt chơi nếu mở rộng hoặc cần chống gian lận. Chưa có kiểm duyệt tự động biệt danh; quản trị viên có thể dừng dịch vụ, sao lưu rồi gỡ bản ghi trong file khi cần.
 
 `npm run test` gồm kiểm thử giao diện và API thật: hai khách, điểm trùng, kỷ lục, lọc, đồng hạng, khởi động lại, gỡ riêng tư, yêu cầu sai nguồn và dữ liệu lỗi. `CHROMIUM_PATH=/duong-dan/chromium npm run test:e2e -- tests/e2e/leaderboard.spec.ts` kiểm tra đăng/gỡ từ hai trình duyệt với dữ liệu máy chủ tạm riêng; cấu hình tự build và mở server ở cổng 3011.
+
+## Cấu trúc frontend / backend
+
+Dự án dùng npm workspaces, một `package-lock.json` ở gốc. Cài bằng `npm ci` tại gốc.
+
+- `frontend/`: React, TypeScript, Vite, assets và kiểm thử giao diện; build ra `frontend/dist/`.
+- `backend/src/index.mjs`: cấu hình môi trường và khởi động máy chủ.
+- `backend/src/app.mjs`: HTTP API, cookie, giới hạn yêu cầu và phục vụ bản frontend production.
+- `backend/src/validation.mjs`: kiểm tra dữ liệu và quy tắc điểm.
+- `backend/src/store.mjs`: đọc, kiểm tra và ghi dữ liệu an toàn.
+- `backend/tests/`: kiểm thử API và lưu trữ.
+- `tests/e2e/`: kiểm thử tích hợp cả hai ứng dụng.
+- `data/`: dữ liệu dùng chung bền vững ở gốc, giữ nguyên vị trí và schema cũ.
+
+Chạy hai terminal: `npm run dev` cho frontend và `npm run dev:backend` cho backend tự tải lại khi sửa mã. Frontend proxy `/api` tới `127.0.0.1:3001`. Production: `npm run build` rồi `npm start`; backend phục vụ frontend và API cùng origin. `npm run test` kiểm thử cả hai workspace; `npm run test:e2e` kiểm tra tích hợp. Có thể chạy riêng bằng `npm run test --workspace @bleq/frontend` hoặc `@bleq/backend`.
+
+Khi deploy cần `frontend/dist/`, toàn bộ `backend/`, manifest gốc và thư mục dữ liệu bền vững; không dùng thư mục `dist/` cũ ở gốc. Hosting static đặt Root Directory là `frontend`, nhưng bảng xếp hạng vẫn cần backend Node. Backend hiện dùng JavaScript ES modules và thư viện chuẩn Node; frontend giữ TypeScript strict. API, cookie và dữ liệu học tập giữ nguyên qua lần tách này.

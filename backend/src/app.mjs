@@ -1,129 +1,19 @@
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, extname, resolve, sep } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-const rules = JSON.parse(
-  readFileSync(new URL('./rules.json', import.meta.url)),
-);
+import { rules, fail, validateSubmission } from './validation.mjs';
+import { createStore } from './store.mjs';
 const cookieName = 'bleq_player';
 const hash = (value) => createHash('sha256').update(value).digest('hex');
-const integer = (value, max) =>
-  Number.isInteger(value) && value >= 0 && value <= max;
-const fail = (status, message) => Object.assign(new Error(message), { status });
-
-export function validateSubmission(value) {
-  if (!value || typeof value !== 'object')
-    throw fail(400, 'Dữ liệu không hợp lệ.');
-  const { nickname, run } = value;
-  if (
-    typeof nickname !== 'string' ||
-    !nickname.trim() ||
-    nickname.trim().length > 40 ||
-    /[\p{Cc}\p{Cf}]/u.test(nickname)
-  )
-    throw fail(
-      400,
-      'Biệt danh cần từ 1 đến 40 ký tự, không chứa ký tự điều khiển.',
-    );
-  if (
-    !run ||
-    typeof run !== 'object' ||
-    typeof run.gameId !== 'string' ||
-    !rules.topics.includes(run.topicId) ||
-    !Object.hasOwn(rules.games, run.gameId) ||
-    run.mode !== 'challenge' ||
-    !['completed', 'timeout'].includes(run.finishedBy) ||
-    !integer(run.correctCount, 5) ||
-    !integer(run.wrongCount, 100000) ||
-    !integer(run.elapsedSeconds, 86400) ||
-    !integer(run.score, 60)
-  )
-    throw fail(400, 'Chỉ đăng kết quả thử thách hợp lệ.');
-  const duration = rules.games[run.gameId];
-  if (
-    (run.finishedBy === 'timeout' && run.elapsedSeconds < duration) ||
-    (run.gameId !== 'word-match' && run.correctCount + run.wrongCount > 5) ||
-    (run.finishedBy === 'completed' &&
-      (run.gameId === 'word-match'
-        ? run.correctCount !== 5
-        : run.correctCount + run.wrongCount !== 5))
-  )
-    throw fail(400, 'Kết quả và thời gian không khớp.');
-  const base = Math.max(
-    0,
-    run.correctCount * 10 -
-      (run.gameId === 'word-match' ? run.wrongCount * 5 : 0),
-  );
-  const bonus =
-    run.finishedBy === 'completed'
-      ? Math.min(
-          10,
-          Math.floor(Math.max(0, duration - run.elapsedSeconds) / 15),
-        )
-      : 0;
-  if (run.score !== base + bonus) throw fail(400, 'Điểm không khớp kết quả.');
-  return {
-    nickname: nickname.trim(),
-    key: `${run.topicId}:${run.gameId}`,
-    score: run.score,
-  };
-}
-
 export function createQuestServer({
   dataFile,
-  distDir = 'dist',
+  distDir = fileURLToPath(new URL('../../frontend/dist', import.meta.url)),
   publicOrigin = '',
 }) {
-  const file = resolve(dataFile);
   const root = resolve(distDir);
-  let players = {};
-  try {
-    const data = JSON.parse(readFileSync(file, 'utf8'));
-    if (
-      data.version !== 1 ||
-      !data.players ||
-      Array.isArray(data.players) ||
-      typeof data.players !== 'object'
-    )
-      throw new Error('Invalid leaderboard file');
-    for (const [id, player] of Object.entries(data.players)) {
-      if (
-        !/^[a-f0-9]{64}$/.test(id) ||
-        !player ||
-        typeof player.nickname !== 'string' ||
-        !player.nickname.trim() ||
-        player.nickname.length > 40 ||
-        !player.scores ||
-        typeof player.scores !== 'object' ||
-        Array.isArray(player.scores) ||
-        Object.entries(player.scores).some(([key, score]) => {
-          const [topic, game, extra] = key.split(':');
-          return (
-            extra !== undefined ||
-            !rules.topics.includes(topic) ||
-            !Object.hasOwn(rules.games, game) ||
-            !integer(score, 60)
-          );
-        })
-      )
-        throw new Error('Invalid leaderboard record');
-    }
-    players = data.players;
-  } catch (error) {
-    if (error.code !== 'ENOENT') throw error; // Preserve a damaged file for recovery.
-  }
-  const persist = (next) => {
-    mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(
-      `${file}.tmp`,
-      JSON.stringify({ version: 1, players: next }),
-      { mode: 0o600, flush: true },
-    );
-    renameSync(`${file}.tmp`, file);
-    players = next;
-  };
+  const store = createStore(dataFile);
   const rates = new Map();
   const json = (res, status, data) => {
     res.writeHead(status, {
@@ -154,7 +44,7 @@ export function createQuestServer({
             (game !== 'all' && !Object.hasOwn(rules.games, game))
           )
             throw fail(400, 'Bộ lọc không hợp lệ.');
-          const rows = Object.entries(players)
+          const rows = Object.entries(store.players)
             .flatMap(([key, player]) => {
               const scores = Object.entries(player.scores).filter(
                 ([category]) => {
@@ -192,7 +82,7 @@ export function createQuestServer({
             entries: ranked.slice(0, 50),
             own: ranked.find((row) => row.mine) ?? null,
             total: ranked.length,
-            hasPublished: Boolean(players[id]),
+            hasPublished: Boolean(store.players[id]),
           });
         }
         if (!['POST', 'DELETE'].includes(req.method))
@@ -203,7 +93,7 @@ export function createQuestServer({
           req.headers['content-type']?.split(';')[0] !== 'application/json'
         )
           throw fail(403, 'Yêu cầu phải gửi từ website này.');
-        const rateKey = players[id] ? id : req.socket.remoteAddress;
+        const rateKey = store.players[id] ? id : req.socket.remoteAddress;
         const now = Date.now();
         const rate = rates.get(rateKey);
         if (rate && now - rate.start < 60000 && rate.count >= 120)
@@ -213,10 +103,10 @@ export function createQuestServer({
           rates.set(rateKey, { start: now, count: 1 });
         } else rate.count++;
         if (req.method === 'DELETE') {
-          if (players[id]) {
-            const next = { ...players };
+          if (store.players[id]) {
+            const next = { ...store.players };
             delete next[id];
-            persist(next);
+            store.persist(next);
           }
           res.setHeader(
             'Set-Cookie',
@@ -242,13 +132,15 @@ export function createQuestServer({
           throw fail(400, 'Dữ liệu JSON không hợp lệ.');
         }
         const submission = validateSubmission(value);
-        if (!players[id] && Object.keys(players).length >= 5000)
+        if (!store.players[id] && Object.keys(store.players).length >= 5000)
           throw fail(503, 'Bảng xếp hạng đã đầy. Vui lòng báo giáo viên.');
-        const nextToken = players[id] ? token : randomBytes(24).toString('hex');
+        const nextToken = store.players[id]
+          ? token
+          : randomBytes(24).toString('hex');
         const nextId = hash(nextToken);
-        const previous = players[nextId];
-        persist({
-          ...players,
+        const previous = store.players[nextId];
+        store.persist({
+          ...store.players,
           [nextId]: {
             nickname: submission.nickname,
             scores: {
@@ -308,22 +200,4 @@ export function createQuestServer({
   });
   server.requestTimeout = 15000;
   return server;
-}
-
-if (
-  process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
-) {
-  const server = createQuestServer({
-    dataFile: process.env.LEADERBOARD_FILE || 'data/leaderboard.json',
-    publicOrigin: process.env.PUBLIC_ORIGIN || '',
-  });
-  server.listen(
-    Number(process.env.PORT || 3001),
-    process.env.HOST || '127.0.0.1',
-    () =>
-      console.log(
-        `English Quest: http://${process.env.HOST || '127.0.0.1'}:${process.env.PORT || 3001}`,
-      ),
-  );
 }

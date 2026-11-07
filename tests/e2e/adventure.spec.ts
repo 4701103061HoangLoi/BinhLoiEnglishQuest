@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { topics } from '../../src/data/neighbourhood';
+import { topics } from '../../frontend/src/data/neighbourhood';
 
 for (const topic of topics) {
   test(`quest ${topic.id}: three missions, chest, persistence`, async ({

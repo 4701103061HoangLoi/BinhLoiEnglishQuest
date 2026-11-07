@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { topics, gameIds, gameInfo } from '../../src/data/neighbourhood';
+import { topics, gameIds, gameInfo } from '../../frontend/src/data/neighbourhood';
 
 test('challenge tab selects topics, opens all games and keeps navigation responsive', async ({
   page,
