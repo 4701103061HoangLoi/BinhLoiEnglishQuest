@@ -18,7 +18,8 @@ Stack: React, React Router, TypeScript strict, Vite; CSS riêng và biểu tư�
 
 ## Các trang và cách chơi
 
-- `/`: giới thiệu bốn chủ đề đang hoạt động; chọn chủ đề để mở đúng bài từ vựng, ngữ pháp và ba game. Nút Chơi thử ngay mở `/demo`: một câu chọn từ theo hình từ Unit 1, không đồng hồ và không lưu điểm; chọn sai được thử lại, chọn đúng có nút bắt đầu Unit 1.
+- `/`: giới thiệu bốn chủ đề đang hoạt động; chọn chủ đề để mở một hành trình học–chơi thống nhất. Nút Chơi thử ngay mở `/demo`: một câu chọn từ theo hình ngẫu nhiên từ năm đồ dùng đầu của Unit 1, xáo trộn ba lựa chọn, không đồng hồ và không lưu điểm; chọn sai được thử lại, chọn đúng có nút bắt đầu Unit 1.
+- `/challenges`: tab Thử thách riêng cho Word Match, Quick Quiz và Sentence Builder; chọn một trong bốn chủ đề. Nút quay lại của game giữ đúng chủ đề trong tab.
 - `/topics`, `/topics/my-neighbourhood`: chọn chủ đề, theo dõi bài đã học và game đã hoàn thành.
 - `/topics/my-neighbourhood/vocabulary`: 9 thẻ từ, minh họa, ví dụ và đọc từ `en-US` khi bấm loa.
 - `/topics/my-neighbourhood/grammar`: 6 quy tắc so sánh hơn, ví dụ và lỗi dễ nhầm.
@@ -97,12 +98,40 @@ E2E chơi đủ ba game, refresh kết quả/huy hiệu, xác nhận thoát, ki�
 
 Từ trang chủ hoặc trang chi tiết của mỗi chủ đề, chọn **Bắt đầu Quest** (`/quest/:topicId`). Bốn chủ đề đều có câu chuyện và rương kho báu riêng:
 
-1. **Săn tìm dấu vết:** đọc từ gợi ý, tìm đúng ba hình và cất vào túi đồ.
-2. **Cặp thẻ bí mật:** lật và ghi nhớ sáu thẻ để ghép ba cặp từ–hình. Cặp sai được xem lại trước khi úp; không mất lượt vì bấm nhanh.
-3. **Giải mật thư:** chạm các mảnh từ để xếp câu, có thể bỏ từ, xếp lại và xem gợi ý.
+1. **Săn tìm dấu vết:** học ba từ đầu ngay trong Quest, rồi tìm đúng ba hình và cất vào túi đồ.
+2. **Cặp thẻ bí mật:** học sáu từ còn lại, rồi lật và ghi nhớ sáu thẻ để ghép ba cặp từ–hình. Word Match nằm trong mục Luyện thêm của chặng này.
+3. **Giải mật thư:** học bài ngữ pháp, đánh dấu đã xem rồi xếp câu để lấy chìa khóa cuối. Quick Quiz và Sentence Builder nằm trong mục Luyện thêm của chặng này.
 
 Mỗi chặng nhận một chìa khóa, đủ ba chìa mới mở rương. Không giới hạn giờ; Quest dùng chạm và Tab/Enter, không yêu cầu kéo thả. Hoàn thành được ghi vào `completedQuestIds` (trường tùy chọn tương thích dữ liệu v1 cũ), hiển thị tại Thành tích. Chơi lại không ghi trùng dấu mốc. Quest không cộng vào bảng điểm của ba game cũ. Xóa tiến độ trong Cài đặt cũng xóa dấu mốc Quest.
 
-Các chặng đang chơi chỉ tồn tại trong phiên trang; rời hoặc tải lại sẽ bắt đầu hành trình từ đầu, có cảnh báo khi đang chơi. Dấu mốc chỉ được ghi khi bấm mở rương. Khi storage bị chặn/đầy, ứng dụng vẫn chơi được và dùng cảnh báo lưu trữ chung của website.
+Chìa khóa được lưu sau từng chặng trong `questCheckpoints` (trường tùy chọn, giá trị 0–3; đọc được dữ liệu v1 cũ). Khi tải lại hoặc đi luyện thêm, Quest trở về đúng chặng đã mở. Chỉ nhiệm vụ đang làm dở bắt đầu lại; bài đã học, chìa khóa, điểm và huy hiệu vẫn giữ nguyên. Lượt chơi luyện thêm dùng `?quest=1`; nút quay lại và trang kết quả đưa về Quest. Luyện thêm không bắt buộc để nhận chìa khóa. Dấu mốc hoàn thành toàn bộ vẫn ghi khi mở rương. Các chủ đề đã hoàn thành trước đây được nhận đủ ba chìa, không bắt học lại; Chơi lại chỉ đặt lại chặng, giữ thành tích cũ. Khi storage bị chặn/đầy, ứng dụng vẫn chơi được và dùng cảnh báo lưu trữ chung của website.
+
+Trang chủ và trang chủ đề dùng chung `JourneyOverview`; không còn tách Quest và Học trước/Thử sức thành hai nhánh. Hai trang bài học cũ vẫn dùng được và có nút trở về hành trình; nội dung bài học và tiến độ dùng chung với Quest.
 
 Câu chuyện: `src/data/quests.ts`. Luật ghép thẻ: `src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đầu để tìm hình, ba từ tiếp theo để ghép thẻ và câu xếp từ đầu tiên làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.
+
+## Nhân vật đồng hành Mây
+
+Mây xuất hiện trong Quest, ba game và phần chơi thử. Nhân vật đổi nét mặt và cử chỉ theo phản hồi: sẵn sàng, cổ vũ khi đúng, cùng suy nghĩ khi sai, ăn mừng khi nhận chìa khóa hoặc mở rương. Chạm nhân vật hoặc dùng Tab/Enter để mở/đóng lời nhắc cách chơi. Mây không tự phát âm thanh và không thay đổi cách tính điểm. Chuyển động ngắn tôn trọng cả `prefers-reduced-motion` lẫn tùy chọn Giảm chuyển động trong Cài đặt.
+
+Nhân vật là SVG cục bộ trong `src/components/QuestGuide.tsx`; CSS tại `src/styles/guide.css`. Lời thoại lấy từ trạng thái trả lời hiện có. Kiểm thử bàn phím, biểu cảm, phản hồi và giảm chuyển động nằm trong `tests/guide.test.tsx`, `tests/e2e/guide.spec.ts`.
+
+## Xáo trộn câu hỏi và đáp án
+
+Ba game dùng seed mới mỗi lượt: thứ tự câu hỏi, lựa chọn quiz, thẻ ghép và mảnh từ đều được xáo trộn. Quest cũng xáo trộn vị trí hình săn tìm, bộ thẻ ghi nhớ và mảnh từ mỗi lần bắt đầu nhiệm vụ. Vị trí giữ nguyên trong lúc trả lời, mở gợi ý hoặc thử sai để không làm gián đoạn việc ghi nhớ.
+
+Chơi thử lấy ngẫu nhiên một trong năm đồ dùng đầu của Unit 1, kèm hai lựa chọn nhiễu và vị trí đáp án ngẫu nhiên. Bấm Thử lại tạo câu mới khác câu vừa làm. Mở trang lần mới là một lần chọn ngẫu nhiên độc lập nên vẫn có thể gặp lại câu cũ. Cách chấm điểm, dữ liệu đã học và chìa khóa không thay đổi. Kiểm thử quy tắc nằm trong `tests/randomization.test.ts`.
+
+## Âm báo câu trả lời và phát âm
+
+Trả lời đúng phát giai điệu chúc mừng ngắn; trả lời sai phát hai nốt nhắc nhẹ. Có trong ba game, chơi thử, săn dấu vết, ghép thẻ Quest (sau khi lật đủ hai thẻ), giải mật thư và khi mở rương. Âm tạo cục bộ bằng Web Audio, không tải tệp nhạc ngoài. Không phát lúc tải trang, chọn từ đơn lẻ hay lật thẻ đầu tiên. Nút Âm thanh trong màn chơi và mục Âm thanh trò chơi và phát âm trong Cài đặt dùng chung thiết lập lưu trên thiết bị. Người mới mặc định bật; thiết lập tắt đã lưu trước đây được tôn trọng. Tắt âm sẽ dừng nhạc hiệu và lượt đọc đang phát.
+
+Nút phát âm có thể bấm lại để đọc từ từ đầu: lượt cũ được hủy, thông báo hủy/ngắt không được xem là lỗi. Callback từ lượt cũ hoặc từ trước đó không thể ghi đè trạng thái lượt mới; lỗi thật vẫn được thông báo và xóa khi thử lại. API âm thanh bị chặn hoặc không hỗ trợ không ảnh hưởng việc trả lời, tính điểm hay lưu tiến độ. Cần thử nghe trên thiết bị thật, đặc biệt iOS và thiết bị chưa cài giọng English.
+
+Nhạc hiệu: `src/lib/feedbackAudio.ts`; kiểm thử `tests/audio.test.ts`, `tests/e2e/audio.spec.ts`. Phát âm: `SpeechButton` trong `src/components/Common.tsx`; kiểm thử hồi quy bấm liên tiếp và chuyển từ tại `tests/speech.test.tsx`.
+
+## Tab Thử thách và chuyển từ vựng
+
+Thanh điều hướng có tab **Thử thách** (`/challenges`). Chọn chủ đề để chơi Word Match, Quick Quiz và Sentence Builder; có thể mở trực tiếp, không cần bắt đầu Quest. Từ Quest, nút Mở tab Thử thách truyền chủ đề và ngữ cảnh hành trình, giữ nguyên chìa khóa khi chuyển trang. Trang Thử thách có nút quay lại hành trình; trang kết quả có cả Tiếp tục hành trình và Chọn thử thách khác. Bấm quay lại từ game mở trong tab đưa về đúng chủ đề đã chọn.
+
+Trong Quest, phần bài học không tự thu lại khi vừa xem thẻ cuối. Học sinh có thể nghe hoặc xem lại thẻ cuối; bấm **Xong phần học, vào nhiệm vụ** hoặc tự thu phần học khi sẵn sàng. Việc chuyển từ trong lúc phát âm vẫn hủy lượt đọc trước an toàn. Kiểm thử tại `tests/speech.test.tsx`, `tests/e2e/challenges.spec.ts` và `tests/e2e/adventure.spec.ts`.

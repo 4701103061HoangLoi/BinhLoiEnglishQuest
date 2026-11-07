@@ -9,6 +9,9 @@ import { ArrowRight, Check, Clock3, Flag, RotateCcw, X } from 'lucide-react';
 import { gameIds, gameInfo, topics } from '../data/neighbourhood';
 import { useProgress } from '../contexts/ProgressContext';
 import { BackLink, EmptyState, Modal, Picture } from '../components/Common';
+import { QuestGuide } from '../components/QuestGuide';
+import { GameSoundToggle } from '../components/GameSoundToggle';
+import { playFeedbackAudio } from '../lib/feedbackAudio';
 import { useGame } from '../games/useGame';
 import { validateTopic } from '../lib/validation';
 import type { GameId, GameMode, Topic } from '../types';
@@ -31,11 +34,19 @@ export function GamePage() {
 function GameEntry({ topic, gameId }: { topic: Topic; gameId: GameId }) {
   const [mode, setMode] = useState<GameMode>('challenge');
   const [started, setStarted] = useState(false);
+  const location = useLocation();
+  const search = new URLSearchParams(location.search);
+  const returnTo =
+    search.get('from') === 'challenges'
+      ? `/challenges?topic=${topic.id}${search.get('quest') === '1' ? '&quest=1' : ''}`
+      : search.get('quest') === '1'
+        ? `/quest/${topic.id}`
+        : `/topics/${topic.id}`;
   const info = gameInfo[gameId];
   if (started) return <ActiveGame topic={topic} gameId={gameId} mode={mode} />;
   return (
     <section className="game-intro narrow">
-      <BackLink to={`/topics/${topic.id}`}>{topic.titleEn}</BackLink>
+      <BackLink to={returnTo}>{topic.titleEn}</BackLink>
       <div className="intro-mark">
         <Flag size={36} />
       </div>
@@ -80,14 +91,22 @@ function ActiveGame({
   mode: GameMode;
 }) {
   const navigate = useNavigate();
-  const { saveRun } = useProgress();
+  const { saveRun, progress } = useProgress();
   const [finished, setFinished] = useState(false);
   const [resultId, setResultId] = useState('');
-  const game = useGame(topic, gameId, mode, (run) => {
-    saveRun(run);
-    setResultId(run.id);
-    setFinished(true);
-  });
+  const game = useGame(
+    topic,
+    gameId,
+    mode,
+    (run) => {
+      saveRun(run);
+      setResultId(run.id);
+      setFinished(true);
+    },
+    (correct) => {
+      void playFeedbackAudio(correct, progress.settings.soundEnabled);
+    },
+  );
   const { state, questions } = game;
   const blocker = useBlocker(!finished);
   useEffect(() => {
@@ -104,6 +123,14 @@ function ActiveGame({
     window.addEventListener('beforeunload', warn);
     return () => window.removeEventListener('beforeunload', warn);
   }, [finished]);
+  const location = useLocation();
+  const search = new URLSearchParams(location.search);
+  const returnTo =
+    search.get('from') === 'challenges'
+      ? `/challenges?topic=${topic.id}${search.get('quest') === '1' ? '&quest=1' : ''}`
+      : search.get('quest') === '1'
+        ? `/quest/${topic.id}`
+        : `/topics/${topic.id}`;
   const info = gameInfo[gameId];
   const q = questions.quiz[state.index];
   const sentence = questions.sentences[state.index];
@@ -120,11 +147,12 @@ function ActiveGame({
         <button
           className="icon-button"
           aria-label="Rời thử thách"
-          onClick={() => navigate(`/topics/${topic.id}`)}
+          onClick={() => navigate(returnTo)}
         >
           <X />
         </button>
       </div>
+      <GameSoundToggle />
       <div className="game-stats">
         <span>
           {gameId === 'word-match'
@@ -281,6 +309,26 @@ function ActiveGame({
             </div>
           </>
         )}
+        <QuestGuide
+          mood={
+            state.feedback
+              ? state.feedback.correct
+                ? 'happy'
+                : 'thinking'
+              : 'ready'
+          }
+          hint={gameInfo[gameId].description}
+        >
+          {state.feedback
+            ? state.feedback.correct
+              ? 'Làm tốt lắm! Cùng tiếp tục nào!'
+              : 'Không sao cả. Cùng đọc lời giải rồi thử ở câu tiếp theo nhé!'
+            : gameId === 'word-match'
+              ? 'Mình sẽ tìm cùng bạn! Chọn từ rồi chạm hình tương ứng nhé.'
+              : gameId === 'quick-quiz'
+                ? 'Đọc kỹ câu hỏi rồi chọn đáp án. Mình ở đây cổ vũ bạn!'
+                : 'Chạm các từ theo thứ tự để ghép câu. Bạn có thể bỏ từ và xếp lại nhé.'}
+        </QuestGuide>
         {state.feedback && (
           <div
             className={`feedback ${state.feedback.correct ? 'success' : 'retry'}`}

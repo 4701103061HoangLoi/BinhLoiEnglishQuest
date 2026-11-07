@@ -87,4 +87,5 @@ export interface UserProgress {
   completedRuns: GameRun[];
   earnedBadgeIds: string[];
   completedQuestIds?: string[];
+  questCheckpoints?: Record<string, number>;
 }

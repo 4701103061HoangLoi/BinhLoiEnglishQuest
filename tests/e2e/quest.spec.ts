@@ -23,10 +23,14 @@ test('complete all games, persist badges and recover routes', async ({
   await page.goto('/');
   await page.getByRole('link', { name: 'Chơi thử ngay' }).click();
   await expect(page).toHaveURL(/\/demo$/);
+  const source = await page.locator('.demo-picture img').getAttribute('src');
+  const demoAnswer = newSchool.vocabulary.find(
+    (word) => word.imagePath === source,
+  )!;
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(
-      page.getByRole('button', { name: 'school bag', exact: true }),
+      page.getByRole('button', { name: demoAnswer.term, exact: true }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -38,9 +42,16 @@ test('complete all games, persist badges and recover routes', async ({
       fullPage: true,
     });
   }
-  await page.getByRole('button', { name: 'pencil', exact: true }).click();
+  const wrongDemoAnswer = (
+    await page.locator('.quiz-options button').allTextContents()
+  ).find((text) => text !== demoAnswer.term)!;
+  await page
+    .getByRole('button', { name: wrongDemoAnswer, exact: true })
+    .click();
   await expect(page.getByRole('status')).toContainText('Chưa đúng');
-  await page.getByRole('button', { name: 'school bag', exact: true }).click();
+  await page
+    .getByRole('button', { name: demoAnswer.term, exact: true })
+    .click();
   await expect(page.getByRole('status')).toContainText('Chính xác');
   expect(
     await page.evaluate(() => localStorage.getItem('bleq_progress_v1')),

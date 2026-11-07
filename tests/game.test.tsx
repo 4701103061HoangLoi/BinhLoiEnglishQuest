@@ -7,8 +7,9 @@ import type { GameRun } from '../src/types';
 describe('game interaction engine', () => {
   it('scores all quiz answers, blocks double submits and saves exactly once', () => {
     const save = vi.fn();
+    const sound = vi.fn();
     const { result } = renderHook(
-      () => useGame(neighbourhood, 'quick-quiz', 'challenge', save),
+      () => useGame(neighbourhood, 'quick-quiz', 'challenge', save, sound),
       { wrapper: StrictMode },
     );
     for (let i = 0; i < 5; i++) {
@@ -20,6 +21,8 @@ describe('game interaction engine', () => {
       expect(result.current.state.answers).toHaveLength(i + 1);
       act(() => result.current.next());
     }
+    expect(sound).toHaveBeenCalledTimes(5);
+    expect(sound.mock.calls.every(([correct]) => correct === true)).toBe(true);
     expect(save).toHaveBeenCalledTimes(1);
     const run = save.mock.calls[0][0] as GameRun;
     expect(run.correctCount).toBe(5);

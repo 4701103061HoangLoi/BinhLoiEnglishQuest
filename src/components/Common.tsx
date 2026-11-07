@@ -114,16 +114,18 @@ export function Modal({
 export function SpeechButton({ text }: { text: string }) {
   const { progress, update } = useProgress();
   const [message, setMessage] = useState('');
+  const activeUtterance = useRef<SpeechSynthesisUtterance | null>(null);
   const supported =
     typeof window !== 'undefined' &&
     'speechSynthesis' in window &&
     'SpeechSynthesisUtterance' in window;
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    setMessage('');
+    return () => {
+      activeUtterance.current = null;
       if (supported) window.speechSynthesis.cancel();
-    },
-    [supported],
-  );
+    };
+  }, [supported, text]);
   function speak() {
     try {
       if (!progress.settings.soundEnabled)
@@ -131,16 +133,28 @@ export function SpeechButton({ text }: { text: string }) {
           ...p,
           settings: { ...p.settings, soundEnabled: true },
         }));
+      activeUtterance.current = null;
+      setMessage('');
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';
       utterance.rate = 0.85;
-      utterance.onerror = () =>
+      activeUtterance.current = utterance;
+      utterance.onerror = (event) => {
+        if (activeUtterance.current !== utterance) return;
+        activeUtterance.current = null;
+        if (event.error === 'canceled' || event.error === 'interrupted') return;
         setMessage(
           'Không phát được âm thanh. Hãy kiểm tra giọng đọc tiếng Anh trên thiết bị.',
         );
+      };
+      utterance.onend = () => {
+        if (activeUtterance.current === utterance)
+          activeUtterance.current = null;
+      };
       window.speechSynthesis.speak(utterance);
     } catch {
+      activeUtterance.current = null;
       setMessage('Thiết bị chưa hỗ trợ phát âm tự động.');
     }
   }

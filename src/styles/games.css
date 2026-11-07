@@ -394,3 +394,9 @@
     font-size: 1rem;
   }
 }
+
+.game-sound-control {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}

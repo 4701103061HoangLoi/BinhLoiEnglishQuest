@@ -107,6 +107,12 @@ export function ResultsPage() {
         </dl>
       </section>
       <div className="actions centered">
+        <ActionLink secondary to={`/challenges?topic=${run.topicId}`}>
+          Chọn thử thách khác
+        </ActionLink>
+        <ActionLink to={`/quest/${run.topicId}`}>
+          Tiếp tục hành trình
+        </ActionLink>
         <ActionLink to={`/play/${run.topicId}/${run.gameId}`}>
           Chơi lại
         </ActionLink>
@@ -395,20 +401,18 @@ export function SettingsPage() {
       </form>
       <div className="settings-row">
         <div>
-          <h2>Âm thanh phát âm</h2>
-          <p>Chỉ đọc khi bạn bấm nút loa ở thẻ từ.</p>
+          <h2>Âm thanh trò chơi và phát âm</h2>
+          <p>Nhạc hiệu khi trả lời đúng/sai; chỉ đọc từ khi bạn bấm nút loa.</p>
         </div>
         <input
           type="checkbox"
-          aria-label="Bật âm thanh phát âm"
+          aria-label="Bật âm thanh trò chơi và phát âm"
           checked={progress.settings.soundEnabled}
           onChange={(e) => {
             update((p) => ({
               ...p,
               settings: { ...p.settings, soundEnabled: e.target.checked },
             }));
-            if (!e.target.checked && 'speechSynthesis' in window)
-              window.speechSynthesis.cancel();
           }}
         />
       </div>

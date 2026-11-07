@@ -22,6 +22,7 @@ export function useGame(
   gameId: GameId,
   mode: GameMode,
   onFinish: (run: GameRun) => void,
+  onAnswer?: (correct: boolean) => void,
 ) {
   const [identity] = useState(() => {
     const start = Date.now();
@@ -182,6 +183,7 @@ export function useGame(
       },
     };
     commit(next);
+    onAnswer?.(correct);
     if (next.matched.length === 5) finish('completed');
   }
   function answerQuiz(id: string) {
@@ -207,6 +209,7 @@ export function useGame(
       ],
       feedback: { correct, answer, text: q.explanationVi },
     });
+    onAnswer?.(correct);
   }
   function toggleToken(id: string) {
     if (!canAct() || latest.current.feedback) return;
@@ -250,6 +253,7 @@ export function useGame(
       ],
       feedback: { correct, answer: q.correctSentence, text: q.explanationVi },
     });
+    onAnswer?.(correct);
   }
   function next() {
     if (!canAct() || !latest.current.feedback) return;

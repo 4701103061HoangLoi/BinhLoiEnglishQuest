@@ -6,7 +6,6 @@ import {
   BookOpen,
   Check,
   CheckCircle2,
-  Flag,
   MapPin,
   Route,
   Sparkles,
@@ -24,19 +23,32 @@ import {
   Picture,
   SpeechButton,
 } from '../components/Common';
+import { JourneyOverview } from '../components/JourneyOverview';
 import { useProgress } from '../contexts/ProgressContext';
 import type { GameId, Topic } from '../types';
 export function GameLinks({
   topicId = neighbourhood.id,
   ids = gameIds,
+  quest = false,
+  challenge = false,
 }: {
   topicId?: string;
   ids?: GameId[];
+  quest?: boolean;
+  challenge?: boolean;
 }) {
+  const search = new URLSearchParams();
+  if (quest) search.set('quest', '1');
+  if (challenge) search.set('from', 'challenges');
+  const suffix = search.size ? `?${search}` : '';
   return (
     <div className="game-links">
       {ids.map((id, i) => (
-        <Link className="game-link" key={id} to={`/play/${topicId}/${id}`}>
+        <Link
+          className="game-link"
+          key={id}
+          to={`/play/${topicId}/${id}${suffix}`}
+        >
           <span className={`game-icon tone-${i}`}>
             {id === 'word-match' ? (
               <MapPin />
@@ -101,82 +113,21 @@ export function HomePage() {
           ))}
         </div>
       </section>
-      <section className="quest-invitation">
-        <div>
-          <h2>Một bản đồ. Ba chìa khóa. Một kho báu.</h2>
-          <p>
-            Săn tìm dấu vết, lật thẻ bí mật và giải mật thư trong{' '}
-            {topic.titleEn}.
-          </p>
-        </div>
-        <ActionLink to={`/quest/${topic.id}`}>Bắt đầu Quest</ActionLink>
-      </section>
       <section className="learning-section">
-        <div className="section-heading">
-          <h2>Chọn hành trình của bạn</h2>
-          <p>Chọn chủ đề để học từ vựng, ôn ngữ pháp và chơi ngay bên dưới.</p>
-          <label className="home-topic-picker">
-            Chủ đề học và chơi
-            <select
-              value={topicId}
-              onChange={(event) => setTopicId(event.target.value)}
-            >
-              {topics.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.titleEn}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="learning-paths">
-          <Link
-            className="learning-path vocab-path"
-            to={`/topics/${topic.id}/vocabulary`}
+        <label className="home-topic-picker">
+          Chủ đề học và chơi
+          <select
+            value={topicId}
+            onChange={(event) => setTopicId(event.target.value)}
           >
-            <div className="path-symbol">
-              <BookOpen size={32} />
-            </div>
-            <div>
-              <h3>Vocabulary Explorer</h3>
-              <p>
-                {topic.vocabulary.length} từ mới · {topic.titleEn}
-              </p>
-              <strong>
-                Khám phá từ vựng <ArrowRight size={18} />
-              </strong>
-            </div>
-            <img src={topic.vocabulary[0].imagePath} alt="" />
-          </Link>
-          <Link
-            className="learning-path grammar-path"
-            to={`/topics/${topic.id}/grammar`}
-          >
-            <div className="path-symbol">
-              <Flag size={32} />
-            </div>
-            <div>
-              <h3>Grammar Hero</h3>
-              <p>{topic.grammarTitle}</p>
-              <strong>
-                Chinh phục ngữ pháp <ArrowRight size={18} />
-              </strong>
-            </div>
-            <span className="grammar-art" aria-hidden="true">
-              <BookOpen size={46} />
-            </span>
-          </Link>
-        </div>
-      </section>
-      <section className="challenge-section">
-        <div className="section-heading">
-          <h2>Ba cách chơi. Một hành trình tiến bộ.</h2>
-          <p>
-            {topic.titleEn} · Mỗi trò chơi có 5 câu hoặc cặp ghép, cùng phản hồi
-            và giải thích.
-          </p>
-        </div>
-        <GameLinks topicId={topic.id} />
+            {topics.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.titleEn}
+              </option>
+            ))}
+          </select>
+        </label>
+        <JourneyOverview topic={topic} />
       </section>
       <section className="local-note">
         <CheckCircle2 size={23} />
@@ -216,8 +167,8 @@ export function TopicsPage() {
               <h2>{topic.titleEn}</h2>
               <p>{topic.titleVi}</p>
               <p className="muted">
-                {topic.vocabulary.length} từ vựng · {topic.grammarTitle} · 3 trò
-                chơi
+                {topic.vocabulary.length} từ vựng · {topic.grammarTitle} · 3
+                chặng học và chơi
               </p>
               <strong>
                 {progress.completedRuns.some((r) => r.topicId === topic.id)
@@ -237,12 +188,6 @@ export function TopicPage() {
   const topic = topics.find((t) => t.id === topicId);
   const { progress } = useProgress();
   if (!topic) return <EmptyState title="Không tìm thấy chủ đề" />;
-  const visited = topic.vocabulary.filter((v) =>
-    progress.visitedVocabularyIds.includes(`${topic.id}:${v.id}`),
-  ).length;
-  const learned = topic.grammar.every((g) =>
-    progress.viewedGrammarIds.includes(`${topic.id}:${g.id}`),
-  );
   const completed = gameIds.filter((id) =>
     progress.completedRuns.some(
       (r) =>
@@ -269,59 +214,7 @@ export function TopicPage() {
         </div>
         <img src={topic.imagePath} alt={topic.imageAlt} />
       </section>
-      <section className="quest-invitation">
-        <div>
-          <h2>Hành trình ba chìa khóa</h2>
-          <p>
-            {(progress.completedQuestIds ?? []).includes(topic.id)
-              ? 'Bạn đã mở rương kho báu. Sẵn sàng khám phá lại?'
-              : 'Tìm dấu vết, ghép thẻ và giải mật thư để mở rương kho báu.'}
-          </p>
-        </div>
-        <ActionLink to={`/quest/${topic.id}`}>Bắt đầu Quest</ActionLink>
-      </section>
-      <div className="section-heading">
-        <h2>Học trước, tự tin hơn</h2>
-        <p>Chọn một nhánh để bắt đầu. Bạn có thể chơi bất cứ lúc nào.</p>
-      </div>
-      <div className="learning-paths">
-        <Link
-          className="learning-path vocab-path"
-          to={`/topics/${topic.id}/vocabulary`}
-        >
-          <BookOpen size={32} />
-          <div>
-            <h3>Vocabulary Explorer</h3>
-            <p>
-              Đã xem {visited}/{topic.vocabulary.length} từ vựng
-            </p>
-            <strong>
-              Học từ vựng <ArrowRight size={18} />
-            </strong>
-          </div>
-        </Link>
-        <Link
-          className="learning-path grammar-path"
-          to={`/topics/${topic.id}/grammar`}
-        >
-          <Flag size={32} />
-          <div>
-            <h3>Grammar Hero</h3>
-            <p>
-              {learned
-                ? 'Đã xem bài học'
-                : `${topic.grammarTitle} · ${topic.grammar.length} quy tắc`}
-            </p>
-            <strong>
-              Học ngữ pháp <ArrowRight size={18} />
-            </strong>
-          </div>
-        </Link>
-      </div>
-      <section className="challenge-section">
-        <h2>Sẵn sàng thử sức?</h2>
-        <GameLinks topicId={topic.id} />
-      </section>
+      <JourneyOverview topic={topic} />
     </>
   );
 }
@@ -334,7 +227,13 @@ export function VocabularyPage() {
     <EmptyState title="Không tìm thấy bài học" />
   );
 }
-function VocabularyLesson({ topic }: { topic: Topic }) {
+export function VocabularyLesson({
+  topic,
+  embedded = false,
+}: {
+  topic: Topic;
+  embedded?: boolean;
+}) {
   const [index, setIndex] = useState(0);
   const { progress, update } = useProgress();
   const item = topic.vocabulary[index];
@@ -348,9 +247,11 @@ function VocabularyLesson({ topic }: { topic: Topic }) {
   }, [topic.id, item.id, update]);
   return (
     <>
-      <BackLink to={`/topics/${topic.id}`}>{topic.titleEn}</BackLink>
+      {!embedded && (
+        <BackLink to={`/quest/${topic.id}`}>Về hành trình</BackLink>
+      )}
       <div className="page-heading compact">
-        <h1>Vocabulary Explorer</h1>
+        {embedded ? <h3>Hành trang từ vựng</h3> : <h1>Vocabulary Explorer</h1>}
         <p className="lead">
           Khám phá {topic.vocabulary.length} từ mới trong chủ đề {topic.titleEn}
           .
@@ -417,31 +318,49 @@ function VocabularyLesson({ topic }: { topic: Topic }) {
           ))}
         </aside>
       </div>
-      <div className="lesson-end">
-        <div>
-          <h2>Sẵn sàng ôn lại từ mới?</h2>
-          <p>Ghép từ với hình để kiểm tra trí nhớ của bạn.</p>
+      {!embedded && (
+        <div className="lesson-end">
+          <div>
+            <h2>Sẵn sàng ôn lại từ mới?</h2>
+            <p>Ghép từ với hình để kiểm tra trí nhớ của bạn.</p>
+          </div>
+          <ActionLink to={`/quest/${topic.id}`}>Tiếp tục hành trình</ActionLink>
         </div>
-        <ActionLink to={`/play/${topic.id}/word-match`}>
-          Luyện tập Word Match
-        </ActionLink>
-      </div>
+      )}
     </>
   );
 }
 export function GrammarPage() {
   const { topicId } = useParams();
   const topic = topics.find((t) => t.id === topicId);
+  return topic ? (
+    <GrammarLesson topic={topic} />
+  ) : (
+    <EmptyState title="Không tìm thấy bài học" />
+  );
+}
+export function GrammarLesson({
+  topic,
+  embedded = false,
+}: {
+  topic: Topic;
+  embedded?: boolean;
+}) {
   const { progress, update } = useProgress();
-  if (!topic) return <EmptyState title="Không tìm thấy bài học" />;
   const learned = topic.grammar.every((g) =>
     progress.viewedGrammarIds.includes(`${topic.id}:${g.id}`),
   );
   return (
     <>
-      <BackLink to={`/topics/${topic.id}`}>{topic.titleEn}</BackLink>
+      {!embedded && (
+        <BackLink to={`/quest/${topic.id}`}>Về hành trình</BackLink>
+      )}
       <div className="page-heading">
-        <h1>{topic.grammarTitle}</h1>
+        {embedded ? (
+          <h3>{topic.grammarTitle}</h3>
+        ) : (
+          <h1>{topic.grammarTitle}</h1>
+        )}
         <p className="lead">{topic.grammarDescriptionVi}</p>
       </div>
       <section className="grammar-example">
@@ -488,13 +407,11 @@ export function GrammarPage() {
         <CheckCircle2 size={18} />
         {learned ? 'Đã xem bài học' : 'Đánh dấu đã xem bài học'}
       </button>
-      <section className="challenge-section">
-        <h2>Đến lượt bạn thử sức!</h2>
-        <GameLinks
-          topicId={topic.id}
-          ids={['quick-quiz', 'sentence-builder']}
-        />
-      </section>
+      {!embedded && (
+        <div className="lesson-end">
+          <ActionLink to={`/quest/${topic.id}`}>Tiếp tục hành trình</ActionLink>
+        </div>
+      )}
     </>
   );
 }

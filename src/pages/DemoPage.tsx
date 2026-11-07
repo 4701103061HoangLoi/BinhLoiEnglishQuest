@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { ActionLink, BackLink, Picture } from '../components/Common';
+import { QuestGuide } from '../components/QuestGuide';
+import { createDemoQuestion } from '../lib/gameLogic';
+import { GameSoundToggle } from '../components/GameSoundToggle';
+import { useProgress } from '../contexts/ProgressContext';
+import { playFeedbackAudio } from '../lib/feedbackAudio';
 import { newSchool } from '../data/firstUnits';
 
-const bag = newSchool.vocabulary.find((word) => word.id === 'school-bag')!;
-const choices = ['pencil', 'school-bag', 'ruler'].map((id) =>
-  newSchool.vocabulary.find((word) => word.id === id)!,
-);
-
 export function DemoPage() {
+  const { progress } = useProgress();
+  const [question, setQuestion] = useState(() =>
+    createDemoQuestion(newSchool.vocabulary.slice(0, 5), Math.random),
+  );
+  const { target, choices } = question;
   const [answer, setAnswer] = useState('');
-  const correct = answer === bag.id;
+  const correct = answer === target.id;
   return (
     <section className="demo-page narrow">
       <BackLink to="/">Trang chủ</BackLink>
@@ -21,8 +26,9 @@ export function DemoPage() {
         </p>
       </div>
       <div className="game-board">
+        <GameSoundToggle />
         <div className="demo-picture">
-          <Picture item={bag} />
+          <Picture item={target} />
         </div>
         <div
           className="quiz-options"
@@ -32,26 +38,47 @@ export function DemoPage() {
           {choices.map((word) => (
             <button
               key={word.id}
-              className={`quiz-option ${correct && word.id === bag.id ? 'correct-option' : ''}`}
+              className={`quiz-option ${correct && word.id === target.id ? 'correct-option' : ''}`}
               disabled={correct}
-              onClick={() => setAnswer(word.id)}
+              onClick={() => {
+                setAnswer(word.id);
+                void playFeedbackAudio(
+                  word.id === target.id,
+                  progress.settings.soundEnabled,
+                );
+              }}
               lang="en"
             >
               {word.term}
             </button>
           ))}
         </div>
-        <p className="demo-feedback" role="status">
+        <QuestGuide
+          mood={correct ? 'happy' : answer ? 'thinking' : 'ready'}
+          hint="Nhìn hình rồi chọn một trong ba từ. Bạn có thể thử lại khi chưa đúng."
+        >
           {correct
-            ? '✓ Chính xác! School bag nghĩa là cặp sách.'
+            ? `✓ Chính xác! ${target.term} nghĩa là ${target.meaningVi}.`
             : answer
-              ? 'Chưa đúng rồi. Đây là chiếc cặp sách — thử chọn lại nhé!'
+              ? `Chưa đúng rồi. Gợi ý: ${target.meaningVi} — thử chọn lại nhé!`
               : 'Chạm hoặc dùng Tab và Enter để chọn.'}
-        </p>
+        </QuestGuide>
         {correct && (
           <div className="actions">
             <ActionLink to="/topics/my-new-school">Bắt đầu Unit 1</ActionLink>
-            <button className="button secondary" onClick={() => setAnswer('')}>
+            <button
+              className="button secondary"
+              onClick={() => {
+                setQuestion((current) =>
+                  createDemoQuestion(
+                    newSchool.vocabulary.slice(0, 5),
+                    Math.random,
+                    current.target.id,
+                  ),
+                );
+                setAnswer('');
+              }}
+            >
               Thử lại
             </button>
           </div>

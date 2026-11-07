@@ -278,3 +278,95 @@
 [data-reduced-motion='true'] .quest-trophy {
   animation: none;
 }
+
+.journey-overview {
+  margin: 32px 0;
+}
+.journey-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+.journey-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.journey-steps li > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--soft-green);
+  color: var(--teal);
+  font-weight: 700;
+}
+.journey-steps h3 {
+  font-size: 1.05rem;
+}
+.journey-steps p {
+  margin-top: 8px;
+  color: var(--muted);
+}
+.quest-study {
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+.quest-study > summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 10px 0;
+  font-weight: 700;
+  color: var(--teal);
+}
+.quest-study .page-heading {
+  margin: 16px 0;
+}
+.quest-study .vocab-layout {
+  grid-template-columns: 1fr;
+}
+.quest-study .word-index button {
+  display: inline-flex;
+  gap: 6px;
+  width: auto;
+  margin: 4px;
+}
+.quest-study .flashcard-copy {
+  padding: 20px;
+}
+.quest-study .flashcard-copy h2 {
+  font-size: 1.8rem;
+}
+.quest-study .flashcard-picture img {
+  max-height: 180px;
+  object-fit: contain;
+}
+.quest-study .grammar-rules {
+  grid-template-columns: 1fr;
+}
+.quest-study .grammar-rules h2 {
+  font-size: 1.15rem;
+}
+.quest-practice {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.quest-practice > p {
+  margin-top: 12px;
+}
+.quest-practice .game-links {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 767px) {
+  .journey-steps {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

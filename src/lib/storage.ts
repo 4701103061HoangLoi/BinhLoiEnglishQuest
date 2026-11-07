@@ -4,7 +4,7 @@ export const STORAGE_KEY = 'bleq_progress_v1';
 export const defaultProgress = (): UserProgress => ({
   version: 1,
   nickname: 'Nhà thám hiểm',
-  settings: { soundEnabled: false, reducedMotion: false },
+  settings: { soundEnabled: true, reducedMotion: false },
   visitedVocabularyIds: [],
   viewedGrammarIds: [],
   completedRuns: [],
@@ -67,6 +67,12 @@ export function validProgress(value: unknown): value is UserProgress {
     strings(value.visitedVocabularyIds) &&
     strings(value.viewedGrammarIds) &&
     strings(value.earnedBadgeIds) &&
+    (value.questCheckpoints === undefined ||
+      (record(value.questCheckpoints) &&
+        !Array.isArray(value.questCheckpoints) &&
+        Object.values(value.questCheckpoints).every((stage) =>
+          integer(stage, 3),
+        ))) &&
     (value.completedQuestIds === undefined ||
       strings(value.completedQuestIds)) &&
     Array.isArray(value.completedRuns) &&

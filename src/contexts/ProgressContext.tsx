@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { stopFeedbackAudio } from '../lib/feedbackAudio';
 import type { UserProgress, GameRun } from '../types';
 import {
   addRun,
@@ -42,6 +43,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     },
     [],
   );
+  useEffect(() => {
+    if (!progress.settings.soundEnabled) {
+      stopFeedbackAudio();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  }, [progress.settings.soundEnabled]);
   const saveRun = useCallback(
     (run: GameRun) => update((p) => addRun(p, run)),
     [update],

@@ -7,7 +7,7 @@ import {
   RouterProvider,
   useLocation,
 } from 'react-router-dom';
-import { Compass, Map, Settings, Trophy } from 'lucide-react';
+import { Compass, Gamepad2, Map, Settings, Trophy } from 'lucide-react';
 import {
   HomePage,
   TopicsPage,
@@ -15,6 +15,7 @@ import {
   VocabularyPage,
   GrammarPage,
 } from '../pages/LearningPages';
+import { ChallengesPage } from '../pages/ChallengesPage';
 import { QuestPage } from '../pages/QuestPage';
 import { DemoPage } from '../pages/DemoPage';
 import { GamePage } from '../pages/GamePage';
@@ -55,6 +56,10 @@ function Layout() {
             <NavLink to="/topics">
               <Map size={18} />
               Khám phá
+            </NavLink>
+            <NavLink to="/challenges">
+              <Gamepad2 size={18} />
+              Thử thách
             </NavLink>
             <NavLink to="/achievements">
               <Trophy size={18} />
@@ -98,6 +103,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/demo', element: <DemoPage /> },
+      { path: '/challenges', element: <ChallengesPage /> },
       { path: '/quest/:topicId', element: <QuestPage /> },
       { path: '/topics', element: <TopicsPage /> },
       { path: '/topics/:topicId', element: <TopicPage /> },

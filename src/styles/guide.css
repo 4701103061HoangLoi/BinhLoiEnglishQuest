@@ -1,0 +1,102 @@
+.quest-guide {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0 16px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--soft-green);
+}
+.guide-character {
+  flex: 0 0 96px;
+  width: 96px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--teal);
+}
+.guide-character svg {
+  display: block;
+  width: 100%;
+}
+.guide-character > span {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.guide-character:hover {
+  background: white;
+}
+.guide-dialogue {
+  min-width: 0;
+}
+.guide-dialogue > strong {
+  display: block;
+  color: var(--teal);
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+.guide-dialogue [role='status'] {
+  line-height: 1.65;
+}
+.guide-help {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.guide-thinking {
+  background: #fff3da;
+}
+.guide-thinking .guide-dialogue > strong,
+.guide-thinking .guide-character {
+  color: #7c571a;
+}
+.guide-happy .guide-body,
+.guide-celebrate .guide-body {
+  transform-origin: 70px 150px;
+  animation: guide-cheer 650ms var(--ease) both;
+}
+.guide-thinking .guide-body {
+  transform-origin: 70px 110px;
+  animation: guide-think 500ms var(--ease) both;
+}
+@keyframes guide-cheer {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-9px) rotate(-3deg);
+  }
+  70% {
+    transform: translateY(-4px) rotate(2deg);
+  }
+}
+@keyframes guide-think {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+@media (max-width: 400px) {
+  .quest-guide {
+    gap: 10px;
+    padding: 12px;
+  }
+  .guide-character {
+    flex-basis: 72px;
+    width: 72px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quest-guide .guide-body {
+    animation: none;
+  }
+}
+[data-reduced-motion='true'] .quest-guide .guide-body {
+  animation: none;
+}

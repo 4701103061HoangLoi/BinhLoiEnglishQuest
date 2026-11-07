@@ -1,4 +1,11 @@
-import type { GameId, GameMode, GameRun, Token, Topic } from '../types';
+import type {
+  GameId,
+  GameMode,
+  GameRun,
+  Token,
+  Topic,
+  VocabularyItem,
+} from '../types';
 export function randomFromSeed(seed: number) {
   let value = seed >>> 0;
   return () => {
@@ -131,4 +138,19 @@ export function badgesForRun(run: GameRun) {
         : [run.gameId === 'quick-quiz' ? 'grammar-hero' : 'sentence-master']
       : []),
   ];
+}
+
+export function createDemoQuestion(
+  words: VocabularyItem[],
+  random: () => number,
+  previousId?: string,
+) {
+  if (words.length < 3) throw new Error('Chơi thử cần ít nhất 3 từ.');
+  const candidates = words.filter((word) => word.id !== previousId);
+  const target = candidates[Math.floor(random() * candidates.length)];
+  const distractors = shuffle(
+    words.filter((word) => word.id !== target.id),
+    random,
+  ).slice(0, 2);
+  return { target, choices: shuffle([target, ...distractors], random) };
 }

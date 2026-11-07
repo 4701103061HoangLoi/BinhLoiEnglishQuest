@@ -1,5 +1,5 @@
-import type { VocabularyItem } from '../types';
-import { randomFromSeed, shuffle } from './gameLogic';
+import type { UserProgress, VocabularyItem } from '../types';
+import { shuffle } from './gameLogic';
 
 export interface MemoryCard {
   id: string;
@@ -16,13 +16,16 @@ export const initialMemory = (): MemoryState => ({
   matched: [],
   attempts: 0,
 });
-export function createMemoryCards(words: VocabularyItem[]): MemoryCard[] {
+export function createMemoryCards(
+  words: VocabularyItem[],
+  random: () => number,
+): MemoryCard[] {
   return shuffle(
     words.flatMap((word) => [
       { id: `${word.id}-word`, wordId: word.id, kind: 'word' as const },
       { id: `${word.id}-picture`, wordId: word.id, kind: 'picture' as const },
     ]),
-    randomFromSeed(73),
+    random,
   );
 }
 export function flipMemory(
@@ -49,4 +52,11 @@ export function flipMemory(
         : state.matched,
     attempts: state.attempts + 1,
   };
+}
+
+export function questStage(progress: UserProgress, topicId: string): number {
+  return (
+    progress.questCheckpoints?.[topicId] ??
+    ((progress.completedQuestIds ?? []).includes(topicId) ? 3 : 0)
+  );
 }

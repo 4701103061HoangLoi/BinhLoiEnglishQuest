@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useBlocker, useParams } from 'react-router-dom';
 import {
   Check,
@@ -17,20 +17,20 @@ import {
   Modal,
   Picture,
 } from '../components/Common';
+import { GameSoundToggle } from '../components/GameSoundToggle';
+import { playFeedbackAudio } from '../lib/feedbackAudio';
+import { QuestGuide } from '../components/QuestGuide';
 import { topics } from '../data/neighbourhood';
 import { quests } from '../data/quests';
 import { useProgress } from '../contexts/ProgressContext';
-import {
-  isSentenceCorrect,
-  randomFromSeed,
-  shuffle,
-  shuffledTokens,
-} from '../lib/gameLogic';
+import { isSentenceCorrect, shuffle, shuffledTokens } from '../lib/gameLogic';
 import {
   createMemoryCards,
   flipMemory,
   initialMemory,
+  questStage,
 } from '../lib/questLogic';
+import { VocabularyLesson, GrammarLesson } from './LearningPages';
 import type { Topic } from '../types';
 
 const stations = ['Săn tìm dấu vết', 'Cặp thẻ bí mật', 'Giải mật thư'];
@@ -46,9 +46,31 @@ export function QuestPage() {
 function Adventure({ topic }: { topic: Topic }) {
   const story = quests[topic.id];
   const { progress, update } = useProgress();
-  const [started, setStarted] = useState(false);
-  const [stage, setStage] = useState(0);
-  const blocker = useBlocker(started && stage < 4);
+  const [started, setStarted] = useState(
+    () =>
+      progress.questCheckpoints?.[topic.id] !== undefined ||
+      (progress.completedQuestIds ?? []).includes(topic.id),
+  );
+  const [stage, setStage] = useState(() => questStage(progress, topic.id));
+  const blocker = useBlocker(
+    ({ nextLocation }) =>
+      started &&
+      stage < 4 &&
+      !(
+        (nextLocation.pathname.startsWith(`/play/${topic.id}/`) ||
+          (nextLocation.pathname === '/challenges' &&
+            new URLSearchParams(nextLocation.search).get('topic') ===
+              topic.id)) &&
+        new URLSearchParams(nextLocation.search).get('quest') === '1'
+      ),
+  );
+  function saveStage(next: number) {
+    setStage(next);
+    update((p) => ({
+      ...p,
+      questCheckpoints: { ...p.questCheckpoints, [topic.id]: next },
+    }));
+  }
   const panel = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (started) panel.current?.focus();
@@ -73,6 +95,7 @@ function Adventure({ topic }: { topic: Topic }) {
           },
     );
     setStage(4);
+    void playFeedbackAudio(true, progress.settings.soundEnabled);
   }
   return (
     <>
@@ -84,6 +107,7 @@ function Adventure({ topic }: { topic: Topic }) {
           3 chặng · Không giới hạn giờ · Chạm hoặc dùng bàn phím
         </p>
       </div>
+      <GameSoundToggle />
       <div className="quest-layout">
         <aside className="quest-map-panel" aria-label="Bản đồ hành trình">
           <img
@@ -141,27 +165,40 @@ function Adventure({ topic }: { topic: Topic }) {
           </h2>
           {!started ? (
             <>
+              <QuestGuide hint="Bắt đầu hành trình, vượt ba nhiệm vụ rồi dùng ba chìa khóa mở rương.">
+                Chào bạn! Mình là Mây. Cùng khám phá {topic.titleEn} nhé! Chạm
+                vào mình bất cứ khi nào cần nhắc cách chơi.
+              </QuestGuide>
               <p>
                 Mỗi nhiệm vụ đúng mang về một chìa khóa. Thu thập đủ ba chìa để
                 mở rương kho báu.
               </p>
               <p className="muted">
-                Bạn có thể thử lại khi sai. Dấu mốc hoàn thành được lưu khi mở
-                rương; các chặng đang chơi sẽ bắt đầu lại nếu rời trang.
+                Bạn có thể thử lại khi sai. Chìa khóa được lưu sau mỗi chặng.
+                Bạn có thể đi luyện thêm rồi trở lại tiếp tục hành trình.
               </p>
               <button
                 className="button primary"
-                onClick={() => setStarted(true)}
+                onClick={() => {
+                  setStarted(true);
+                  saveStage(0);
+                }}
               >
                 <Flag size={19} /> Bắt đầu hành trình
               </button>
             </>
           ) : stage === 0 ? (
-            <Hunt topic={topic} onComplete={() => setStage(1)} />
+            <QuestStudy key="study-0" topic={topic} stage={0}>
+              <Hunt topic={topic} onComplete={() => saveStage(1)} />
+            </QuestStudy>
           ) : stage === 1 ? (
-            <Memory topic={topic} onComplete={() => setStage(2)} />
+            <QuestStudy key="study-1" topic={topic} stage={1}>
+              <Memory topic={topic} onComplete={() => saveStage(2)} />
+            </QuestStudy>
           ) : stage === 2 ? (
-            <Cipher topic={topic} onComplete={() => setStage(3)} />
+            <QuestStudy key="study-2" topic={topic} stage={2}>
+              <Cipher topic={topic} onComplete={() => saveStage(3)} />
+            </QuestStudy>
           ) : stage === 3 ? (
             <div className="quest-treasure">
               <div className="quest-chest" aria-hidden="true">
@@ -172,7 +209,12 @@ function Adventure({ topic }: { topic: Topic }) {
                   <KeyRound />
                 </span>
               </div>
-              <p>Bạn đã thu thập đủ ba chìa khóa. Kho báu đang chờ!</p>
+              <QuestGuide
+                mood="celebrate"
+                hint="Bấm Mở rương kho báu để nhận dấu mốc hoàn thành."
+              >
+                Bạn đã thu thập đủ ba chìa khóa. Kho báu đang chờ!
+              </QuestGuide>
               <button className="button primary" onClick={openTreasure}>
                 Mở rương kho báu <Sparkles size={19} />
               </button>
@@ -183,7 +225,12 @@ function Adventure({ topic }: { topic: Topic }) {
                 <Trophy size={64} />
               </div>
               <p>{story.ending}</p>
-              <p role="status">✓ Bạn đã chinh phục cả ba nhiệm vụ!</p>
+              <QuestGuide
+                mood="celebrate"
+                hint="Dấu mốc mở rương được lưu trong Thành tích. Bạn có thể khám phá chủ đề khác hoặc chơi lại."
+              >
+                ✓ Bạn đã chinh phục cả ba nhiệm vụ!
+              </QuestGuide>
               <div className="actions">
                 <ActionLink to="/achievements">Xem thành tích</ActionLink>
                 <ActionLink secondary to="/topics">
@@ -193,7 +240,7 @@ function Adventure({ topic }: { topic: Topic }) {
                   className="button secondary"
                   onClick={() => {
                     setStarted(false);
-                    setStage(0);
+                    saveStage(0);
                   }}
                 >
                   Chơi lại hành trình
@@ -210,19 +257,119 @@ function Adventure({ topic }: { topic: Topic }) {
           onCancel={() => blocker.reset()}
           onConfirm={() => blocker.proceed()}
         >
-          Các chặng đang chơi sẽ bắt đầu lại. Hành trình đã hoàn thành trước đó
-          vẫn được giữ.
+          Chìa khóa và bài đã học được giữ nguyên. Nhiệm vụ đang làm dở sẽ bắt
+          đầu lại khi quay về.
         </Modal>
       )}
     </>
   );
 }
+
+function QuestStudy({
+  topic,
+  stage,
+  children,
+}: {
+  topic: Topic;
+  stage: number;
+  children: ReactNode;
+}) {
+  const { progress } = useProgress();
+  const words =
+    stage === 0 ? topic.vocabulary.slice(0, 3) : topic.vocabulary.slice(3);
+  const viewed = words.filter((word) =>
+    progress.visitedVocabularyIds.includes(`${topic.id}:${word.id}`),
+  ).length;
+  const ready =
+    stage === 2
+      ? topic.grammar.every((rule) =>
+          progress.viewedGrammarIds.includes(`${topic.id}:${rule.id}`),
+        )
+      : viewed === words.length;
+  const [studyOpen, setStudyOpen] = useState(!ready);
+  return (
+    <>
+      <details
+        className="quest-study"
+        open={studyOpen}
+        onToggle={(event) => setStudyOpen(event.currentTarget.open)}
+      >
+        <summary>
+          {stage === 2
+            ? `Học ngữ pháp · ${ready ? 'Đã xem' : 'Chưa xem'}`
+            : `Học từ vựng · ${viewed}/${words.length} từ đã xem`}
+        </summary>
+        {stage === 2 ? (
+          <GrammarLesson topic={topic} embedded />
+        ) : (
+          <VocabularyLesson topic={{ ...topic, vocabulary: words }} embedded />
+        )}
+        {ready && (
+          <button
+            className="button secondary"
+            onClick={(event) => {
+              setStudyOpen(false);
+              event.currentTarget
+                .closest('details')
+                ?.querySelector('summary')
+                ?.focus();
+            }}
+          >
+            Xong phần học, vào nhiệm vụ
+          </button>
+        )}
+      </details>
+      {!ready ? (
+        <QuestGuide
+          hint={
+            stage === 2
+              ? 'Đọc quy tắc rồi bấm Đánh dấu đã xem bài học.'
+              : 'Dùng nút Tiếp hoặc từ điển bỏ túi để xem đủ các từ của chặng này.'
+          }
+        >
+          Cùng học hành trang trước nhé! Khi đã xem đủ{' '}
+          {stage === 2 ? 'bài ngữ pháp' : 'các từ'}, nhiệm vụ bên dưới sẽ mở.
+        </QuestGuide>
+      ) : (
+        <>
+          {children}
+          {stage > 0 && (
+            <section className="quest-practice">
+              <h3>Luyện thêm trong chặng này</h3>
+              <p className="muted">
+                Word Match, Quick Quiz và Sentence Builder nằm trong tab Thử
+                thách. Điểm và huy hiệu được lưu riêng; quay lại hành trình từ
+                trang kết quả. Luyện thêm không bắt buộc để nhận chìa khóa.
+              </p>
+              <ActionLink to={`/challenges?topic=${topic.id}&quest=1`}>
+                Mở tab Thử thách
+              </ActionLink>
+              {progress.completedRuns.filter(
+                (run) =>
+                  run.topicId === topic.id &&
+                  run.finishedBy === 'completed' &&
+                  (stage === 1
+                    ? run.gameId === 'word-match'
+                    : run.gameId !== 'word-match'),
+              ).length > 0 && (
+                <p className="quest-earned">
+                  ✓ Bạn đã có lượt luyện tập hoàn thành ở chặng này.
+                </p>
+              )}
+            </section>
+          )}
+        </>
+      )}
+    </>
+  );
+}
 function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
+  const { progress } = useProgress();
   const targets = topic.vocabulary.slice(0, 3);
   const [found, setFound] = useState<string[]>([]);
   const [answer, setAnswer] = useState('');
   const [items] = useState(() =>
-    shuffle(topic.vocabulary.slice(0, 6), randomFromSeed(21)),
+    shuffle(topic.vocabulary.slice(0, 6), Math.random),
   );
   const target = targets[found.length];
   const correct = answer === target?.id;
@@ -257,14 +404,25 @@ function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
             }
             disabled={found.includes(word.id) || correct || done}
             aria-label={`Tìm hình ${word.meaningVi}`}
-            onClick={() => setAnswer(word.id)}
+            onClick={() => {
+              setAnswer(word.id);
+              void playFeedbackAudio(
+                word.id === target.id,
+                progress.settings.soundEnabled,
+              );
+            }}
           >
             <Picture item={word} />
             {found.includes(word.id) && <Check aria-label="Đã tìm thấy" />}
           </button>
         ))}
       </div>
-      <p className="quest-feedback" role="status">
+      <QuestGuide
+        mood={
+          done ? 'celebrate' : correct ? 'happy' : answer ? 'thinking' : 'ready'
+        }
+        hint="Đọc từ ở ô Tìm, rồi chọn hình phù hợp. Đúng rồi thì cất vào túi đồ để tìm từ tiếp theo."
+      >
         {done
           ? '✓ Chìa khóa thứ nhất thuộc về bạn!'
           : correct
@@ -272,7 +430,7 @@ function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
             : answer
               ? `Chưa đúng. Gợi ý: tìm hình ${target.meaningVi}.`
               : 'Hãy quan sát các hình và tìm dấu vết đầu tiên.'}
-      </p>
+      </QuestGuide>
       {correct && !done && (
         <button
           className="button primary"
@@ -295,8 +453,9 @@ function Memory({
   topic: Topic;
   onComplete: () => void;
 }) {
+  const { progress } = useProgress();
   const words = topic.vocabulary.slice(3, 6);
-  const [cards] = useState(() => createMemoryCards(words));
+  const [cards] = useState(() => createMemoryCards(words, Math.random));
   const [state, setState] = useState(initialMemory);
   const done = state.matched.length === words.length;
   const pair = state.open.length === 2;
@@ -328,7 +487,15 @@ function Memory({
                   : `Lật thẻ ${index + 1}`
               }
               disabled={revealed || pair || done}
-              onClick={() => setState((s) => flipMemory(s, cards, card.id))}
+              onClick={() => {
+                const next = flipMemory(state, cards, card.id);
+                setState(next);
+                if (next !== state && next.open.length === 2)
+                  void playFeedbackAudio(
+                    next.matched.length > state.matched.length,
+                    progress.settings.soundEnabled,
+                  );
+              }}
             >
               {revealed ? (
                 card.kind === 'word' ? (
@@ -346,7 +513,12 @@ function Memory({
           );
         })}
       </div>
-      <p className="quest-feedback" role="status">
+      <QuestGuide
+        mood={
+          done ? 'celebrate' : pair ? (matched ? 'happy' : 'thinking') : 'ready'
+        }
+        hint="Mỗi cặp có một thẻ chữ và một thẻ hình. Lật hai thẻ, ghi nhớ vị trí rồi ghép lại cho đúng."
+      >
         {done
           ? '✓ Đủ ba cặp! Bạn nhận được chìa khóa thứ hai.'
           : pair
@@ -356,7 +528,7 @@ function Memory({
             : state.open.length
               ? 'Chọn thêm một thẻ để ghép cặp.'
               : 'Lật một thẻ bất kỳ để bắt đầu.'}
-      </p>
+      </QuestGuide>
       {pair && !done && (
         <button
           className="button secondary"
@@ -376,10 +548,9 @@ function Cipher({
   topic: Topic;
   onComplete: () => void;
 }) {
+  const { progress } = useProgress();
   const sentence = topic.sentences[0];
-  const [tokens] = useState(() =>
-    shuffledTokens(sentence.tokens, randomFromSeed(37)),
-  );
+  const [tokens] = useState(() => shuffledTokens(sentence.tokens, Math.random));
   const [selected, setSelected] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('');
   const [solved, setSolved] = useState(false);
@@ -391,6 +562,7 @@ function Cipher({
       sentence.correctSentence,
     );
     setSolved(correct);
+    void playFeedbackAudio(correct, progress.settings.soundEnabled);
     setFeedback(
       correct
         ? `✓ Mật thư đã giải! ${sentence.explanationVi}`
@@ -471,9 +643,12 @@ function Cipher({
           {sentence.explanationVi}
         </p>
       )}
-      <p className="quest-feedback" role="status">
+      <QuestGuide
+        mood={solved ? 'celebrate' : feedback ? 'thinking' : 'ready'}
+        hint="Chạm từng từ để tạo câu. Chạm từ trong câu để bỏ; dùng Xem gợi ý nếu cần từ đầu tiên."
+      >
         {feedback}
-      </p>
+      </QuestGuide>
       {solved && <NextStation onClick={onComplete} final />}
     </>
   );

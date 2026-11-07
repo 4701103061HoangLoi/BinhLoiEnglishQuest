@@ -462,6 +462,7 @@ progress::-moz-progress-bar {
   }
   .header-inner {
     padding: 18px 28px;
+    flex-wrap: wrap;
   }
   main {
     padding: 0 28px 60px;
@@ -502,9 +503,11 @@ progress::-moz-progress-bar {
     gap: 6px;
   }
   .site-header nav a {
-    padding: 8px 7px;
+    padding: 8px 4px;
+    flex-direction: column;
+    gap: 4px;
     justify-content: center;
-    font-size: 0.82rem;
+    font-size: 0.75rem;
     flex: 1;
   }
   .site-header nav a svg {
