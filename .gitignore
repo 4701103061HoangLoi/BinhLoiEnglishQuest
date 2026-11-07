@@ -1,0 +1,15 @@
+node_modules/
+dist/
+*.tsbuildinfo
+test-results/
+playwright-report/
+
+# Local AI tooling and generated design context
+/.agents/
+/.codex/
+/.impeccable/
+/PRODUCT.md
+/DESIGN.md
+/AGENTS.md
+/BINH_LOI_ENGLISH_QUEST_PRD.md
+/CODEX_START_HERE.md
