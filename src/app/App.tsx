@@ -15,6 +15,8 @@ import {
   VocabularyPage,
   GrammarPage,
 } from '../pages/LearningPages';
+import { QuestPage } from '../pages/QuestPage';
+import { DemoPage } from '../pages/DemoPage';
 import { GamePage } from '../pages/GamePage';
 import {
   ResultsPage,
@@ -95,6 +97,8 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: '/', element: <HomePage /> },
+      { path: '/demo', element: <DemoPage /> },
+      { path: '/quest/:topicId', element: <QuestPage /> },
       { path: '/topics', element: <TopicsPage /> },
       { path: '/topics/:topicId', element: <TopicPage /> },
       { path: '/topics/:topicId/vocabulary', element: <VocabularyPage /> },

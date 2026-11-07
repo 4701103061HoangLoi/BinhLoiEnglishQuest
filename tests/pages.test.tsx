@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
+import { DemoPage } from '../src/pages/DemoPage';
 import { GamePage } from '../src/pages/GamePage';
 import {
   AchievementsPage,
@@ -9,7 +10,8 @@ import {
   SettingsPage,
 } from '../src/pages/ProgressPages';
 import type { GameRun } from '../src/types';
-import { VocabularyPage } from '../src/pages/LearningPages';
+import { HomePage, VocabularyPage } from '../src/pages/LearningPages';
+import { topics, gameIds } from '../src/data/neighbourhood';
 import { ProgressProvider } from '../src/contexts/ProgressContext';
 import {
   defaultProgress,
@@ -19,6 +21,8 @@ import {
 function mount(path: string) {
   const router = createMemoryRouter(
     [
+      { path: '/', element: <HomePage /> },
+      { path: '/demo', element: <DemoPage /> },
       { path: '/play/:topicId/:gameId', element: <GamePage /> },
       { path: '/results/:runId', element: <ResultsPage /> },
       { path: '/settings', element: <SettingsPage /> },
@@ -36,6 +40,66 @@ function mount(path: string) {
   return router;
 }
 describe('routes and user interactions', () => {
+  it('offers one standalone demo question, retries and a Unit 1 link without changing progress', async () => {
+    writeProgress({ ...defaultProgress(), nickname: 'Explorer' });
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const user = userEvent.setup();
+    mount('/demo');
+    await user.click(
+      screen.getByRole('button', { name: 'pencil' }),
+    );
+    expect(screen.getByRole('status')).toHaveTextContent('Chưa đúng');
+    await user.click(
+      screen.getByRole('button', { name: 'school bag' }),
+    );
+    expect(screen.getByRole('status')).toHaveTextContent('Chính xác');
+    expect(
+      screen.getByRole('link', { name: 'Bắt đầu Unit 1' }),
+    ).toHaveAttribute('href', '/topics/my-new-school');
+    expect(
+      screen.getByRole('button', { name: 'ruler' }),
+    ).toBeDisabled();
+    await user.click(
+      screen.getByRole('button', { name: 'Thử lại' }),
+    );
+    expect(
+      screen.getByRole('button', { name: 'ruler' }),
+    ).toBeEnabled();
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(saved);
+  });
+  it('shows all live topics and updates every learning and game link on the home page', async () => {
+    const user = userEvent.setup();
+    mount('/');
+    for (const topic of topics) {
+      expect(
+        within(
+          document.querySelector('.home-topic-map') as HTMLElement,
+        ).getByRole('link', { name: new RegExp(topic.titleEn) }),
+      ).toHaveAttribute('href', `/topics/${topic.id}`);
+      await user.selectOptions(
+        screen.getByLabelText('Chủ đề học và chơi'),
+        topic.id,
+      );
+      expect(
+        screen.getByRole('link', { name: /Vocabulary Explorer/ }),
+      ).toHaveAttribute('href', `/topics/${topic.id}/vocabulary`);
+      expect(
+        screen.getByRole('link', { name: /Grammar Hero/ }),
+      ).toHaveAttribute('href', `/topics/${topic.id}/grammar`);
+      for (const id of gameIds) {
+        expect(
+          document.querySelector(
+            `.game-links a[href="/play/${topic.id}/${id}"]`,
+          ),
+        ).toBeInTheDocument();
+      }
+    }
+    expect(screen.queryByText('Sắp ra mắt')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Chơi thử ngay' })).toHaveAttribute(
+      'href',
+      '/demo',
+    );
+  });
   it('combines topic and game filters, clears empty filters, and keeps saved history', async () => {
     const run: GameRun = {
       id: 'quiz',

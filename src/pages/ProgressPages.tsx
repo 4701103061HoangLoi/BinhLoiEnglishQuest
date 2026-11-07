@@ -179,6 +179,28 @@ export function AchievementsPage() {
           Thành tích cá nhân trên thiết bị này · Không đồng bộ tài khoản
         </p>
       </div>
+      <section className="challenge-section">
+        <h2>Hành trình đã chinh phục</h2>
+        <p className="muted">Mở rương sau ba nhiệm vụ để lưu dấu mốc Quest.</p>
+        <div className="quest-collection">
+          {topics
+            .filter((topic) =>
+              (progress.completedQuestIds ?? []).includes(topic.id),
+            )
+            .map((topic) => (
+              <Link key={topic.id} to={`/quest/${topic.id}`}>
+                <Trophy size={20} />
+                {topic.titleEn} · Đã mở rương
+              </Link>
+            ))}
+        </div>
+        {!(progress.completedQuestIds ?? []).length && (
+          <p>
+            Chưa mở rương nào.{' '}
+            <Link to="/topics">Chọn chủ đề để bắt đầu Quest</Link>.
+          </p>
+        )}
+      </section>
       <section>
         <div className="section-heading inline">
           <h2>Bộ sưu tập huy hiệu</h2>

@@ -1,0 +1,280 @@
+.quest-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.4fr);
+  gap: 32px;
+  align-items: start;
+}
+.quest-map-panel {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+}
+.quest-map-image {
+  width: 100%;
+  display: block;
+}
+.quest-key-count {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background: var(--soft-green);
+  color: var(--teal);
+  font-weight: 700;
+}
+.quest-stations {
+  list-style: none;
+  padding: 8px 20px 20px;
+  margin: 0;
+}
+.quest-stations li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+.quest-stations li + li {
+  border-top: 1px dashed var(--line);
+}
+.quest-stations li > span {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--soft-blue);
+  color: var(--blue);
+}
+.quest-stations small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+}
+.quest-stations [aria-current='step'] strong {
+  color: var(--blue);
+}
+.quest-stations .quest-station-complete > span {
+  color: var(--teal);
+  background: var(--soft-green);
+}
+.quest-mission {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: white;
+}
+.quest-mission > p {
+  margin-top: 16px;
+}
+.quest-mission > .button {
+  margin-top: 20px;
+}
+.quest-mission-heading {
+  margin-bottom: 20px;
+}
+.quest-mission-heading:focus {
+  outline: none;
+}
+.quest-target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin: 20px 0;
+  border-radius: 10px;
+  background: var(--soft-blue);
+  color: var(--blue-dark);
+}
+.quest-target small {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.quest-hunt-grid,
+.quest-memory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.quest-hunt-grid button {
+  position: relative;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  overflow: hidden;
+  padding: 0;
+}
+.quest-hunt-grid img {
+  width: 100%;
+  display: block;
+}
+.quest-hunt-grid .quest-found {
+  border-color: var(--teal);
+}
+.quest-hunt-grid button > svg {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  color: var(--teal);
+  background: white;
+  border-radius: 50%;
+}
+.quest-memory-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 125px;
+  padding: 10px;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  background: var(--soft-blue);
+  color: var(--blue-dark);
+  overflow-wrap: anywhere;
+}
+.quest-memory-card img {
+  width: 100%;
+  max-height: 105px;
+  object-fit: contain;
+}
+.quest-memory-card.quest-revealed {
+  background: var(--soft-green);
+  color: var(--ink);
+}
+.quest-memory-card:disabled {
+  opacity: 1;
+}
+.quest-feedback {
+  min-height: 3.5em;
+}
+.quest-sentence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 100px;
+  padding: 16px;
+  margin-top: 20px;
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+}
+.quest-hint {
+  padding: 16px;
+  background: var(--soft-green);
+  border-radius: 10px;
+}
+.quest-treasure {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+  text-align: center;
+  padding: 20px 0;
+}
+.quest-chest,
+.quest-trophy {
+  color: var(--teal);
+  background: var(--soft-green);
+  padding: 24px;
+  border-radius: 16px;
+}
+.quest-chest span {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--blue);
+}
+.quest-trophy {
+  animation: quest-reveal 500ms var(--ease) both;
+}
+.quest-earned {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  color: var(--teal);
+}
+.quest-invitation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  margin: 28px 0;
+  border-radius: 16px;
+  background: var(--soft-blue);
+}
+.quest-invitation p {
+  margin-top: 8px;
+}
+.quest-invitation .button {
+  flex-shrink: 0;
+}
+.quest-collection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.quest-collection a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--teal);
+}
+@keyframes quest-reveal {
+  from {
+    transform: scale(0.85);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (max-width: 767px) {
+  .quest-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .quest-map-image {
+    max-height: 210px;
+    object-fit: contain;
+    background: var(--soft-green);
+  }
+  .quest-stations {
+    padding-bottom: 8px;
+  }
+  .quest-stations li {
+    padding: 10px 0;
+  }
+  .quest-mission {
+    padding: 20px 16px;
+  }
+  .quest-hunt-grid,
+  .quest-memory-grid {
+    gap: 8px;
+  }
+  .quest-memory-card {
+    min-height: 110px;
+    font-size: 0.85rem;
+  }
+  .quest-invitation {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quest-trophy {
+    animation: none;
+  }
+}
+[data-reduced-motion='true'] .quest-trophy {
+  animation: none;
+}

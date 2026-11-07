@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
+import { newSchool } from '../../src/data/firstUnits';
 const words = [
   ['art gallery', 'phòng trưng bày nghệ thuật'],
   ['cathedral', 'nhà thờ lớn'],
@@ -7,13 +8,6 @@ const words = [
   ['temple', 'đền thờ'],
   ['square', 'quảng trường'],
 ];
-const quizAnswers: Record<string, string> = {
-  'This street': 'busier',
-  'This building': 'more modern',
-  'The village': 'more peaceful',
-  'My classroom': 'bigger',
-  'The market': 'more crowded',
-};
 const sentences = [
   'This street is busier than that street',
   'The temple is older than the art gallery',
@@ -28,13 +22,42 @@ test('complete all games, persist badges and recover routes', async ({
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await page.getByRole('link', { name: 'Chơi thử ngay' }).click();
+  await expect(page).toHaveURL(/\/demo$/);
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await expect(
+      page.getByRole('button', { name: 'school bag', exact: true }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.screenshot({
+      path: `/tmp/english-demo-${width}.png`,
+      fullPage: true,
+    });
+  }
+  await page.getByRole('button', { name: 'pencil', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Chưa đúng');
+  await page.getByRole('button', { name: 'school bag', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText('Chính xác');
+  expect(
+    await page.evaluate(() => localStorage.getItem('bleq_progress_v1')),
+  ).toBeNull();
+  await page.getByRole('link', { name: 'Bắt đầu Unit 1' }).click();
+  await expect(page).toHaveURL(/\/topics\/my-new-school$/);
+  await page.goto('/play/my-new-school/quick-quiz');
   await page.getByRole('button', { name: 'Bắt đầu chơi' }).click();
   for (let i = 0; i < 5; i++) {
     const text = await page.locator('.question').innerText();
-    const key = Object.keys(quizAnswers).find((key) => text.startsWith(key))!;
+    const question = newSchool.quiz.find((q) => q.prompt === text)!;
+    const answer = question.options.find(
+      (option) => option.id === question.correctOptionId,
+    )!;
     await page
       .locator('.quiz-option')
-      .filter({ hasText: quizAnswers[key] })
+      .filter({ has: page.getByText(answer.text, { exact: true }) })
       .click();
     await expect(page.locator('.feedback')).toContainText('Chính xác');
     await page

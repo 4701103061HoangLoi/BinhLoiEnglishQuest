@@ -86,4 +86,5 @@ export interface UserProgress {
   viewedGrammarIds: string[];
   completedRuns: GameRun[];
   earnedBadgeIds: string[];
+  completedQuestIds?: string[];
 }

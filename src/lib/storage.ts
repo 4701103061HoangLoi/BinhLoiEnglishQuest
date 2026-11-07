@@ -67,6 +67,8 @@ export function validProgress(value: unknown): value is UserProgress {
     strings(value.visitedVocabularyIds) &&
     strings(value.viewedGrammarIds) &&
     strings(value.earnedBadgeIds) &&
+    (value.completedQuestIds === undefined ||
+      strings(value.completedQuestIds)) &&
     Array.isArray(value.completedRuns) &&
     value.completedRuns.length <= 30 &&
     value.completedRuns.every(validRun)

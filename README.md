@@ -18,7 +18,7 @@ Stack: React, React Router, TypeScript strict, Vite; CSS riêng và biểu tư�
 
 ## Các trang và cách chơi
 
-- `/`: bắt đầu khám phá hoặc chơi Quick Quiz ngay.
+- `/`: giới thiệu bốn chủ đề đang hoạt động; chọn chủ đề để mở đúng bài từ vựng, ngữ pháp và ba game. Nút Chơi thử ngay mở `/demo`: một câu chọn từ theo hình từ Unit 1, không đồng hồ và không lưu điểm; chọn sai được thử lại, chọn đúng có nút bắt đầu Unit 1.
 - `/topics`, `/topics/my-neighbourhood`: chọn chủ đề, theo dõi bài đã học và game đã hoàn thành.
 - `/topics/my-neighbourhood/vocabulary`: 9 thẻ từ, minh họa, ví dụ và đọc từ `en-US` khi bấm loa.
 - `/topics/my-neighbourhood/grammar`: 6 quy tắc so sánh hơn, ví dụ và lỗi dễ nhầm.
@@ -92,3 +92,17 @@ npm run format                  # Prettier, 2 spaces, single quotes
 ```
 
 E2E chơi đủ ba game, refresh kết quả/huy hiệu, xác nhận thoát, kiểm tra routes ở 360/390/768/1024/1440px, token bằng touch, trả lời bằng bàn phím và timeout thật trên browser. Ảnh kiểm tra được ghi vào `.impeccable/review/` (gitignored). Không thay thế kiểm tra trên iPhone thật.
+
+## Quest: hành trình ba chìa khóa
+
+Từ trang chủ hoặc trang chi tiết của mỗi chủ đề, chọn **Bắt đầu Quest** (`/quest/:topicId`). Bốn chủ đề đều có câu chuyện và rương kho báu riêng:
+
+1. **Săn tìm dấu vết:** đọc từ gợi ý, tìm đúng ba hình và cất vào túi đồ.
+2. **Cặp thẻ bí mật:** lật và ghi nhớ sáu thẻ để ghép ba cặp từ–hình. Cặp sai được xem lại trước khi úp; không mất lượt vì bấm nhanh.
+3. **Giải mật thư:** chạm các mảnh từ để xếp câu, có thể bỏ từ, xếp lại và xem gợi ý.
+
+Mỗi chặng nhận một chìa khóa, đủ ba chìa mới mở rương. Không giới hạn giờ; Quest dùng chạm và Tab/Enter, không yêu cầu kéo thả. Hoàn thành được ghi vào `completedQuestIds` (trường tùy chọn tương thích dữ liệu v1 cũ), hiển thị tại Thành tích. Chơi lại không ghi trùng dấu mốc. Quest không cộng vào bảng điểm của ba game cũ. Xóa tiến độ trong Cài đặt cũng xóa dấu mốc Quest.
+
+Các chặng đang chơi chỉ tồn tại trong phiên trang; rời hoặc tải lại sẽ bắt đầu hành trình từ đầu, có cảnh báo khi đang chơi. Dấu mốc chỉ được ghi khi bấm mở rương. Khi storage bị chặn/đầy, ứng dụng vẫn chơi được và dùng cảnh báo lưu trữ chung của website.
+
+Câu chuyện: `src/data/quests.ts`. Luật ghép thẻ: `src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đầu để tìm hình, ba từ tiếp theo để ghép thẻ và câu xếp từ đầu tiên làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.

@@ -61,6 +61,8 @@ export function GameLinks({
   );
 }
 export function HomePage() {
+  const [topicId, setTopicId] = useState(neighbourhood.id);
+  const topic = topics.find((item) => item.id === topicId)!;
   return (
     <>
       <section className="hero">
@@ -72,12 +74,13 @@ export function HomePage() {
             Learn English through fun challenges!
           </p>
           <p className="lead">
-            Mỗi từ mới là một điểm đến. Mỗi thử thách là một bước tiến. Cùng
-            khám phá khu phố bằng tiếng Anh nhé!
+            Khám phá trường học, ngôi nhà, bạn bè và khu phố qua {topics.length}{' '}
+            chủ đề tiếng Anh lớp 6. Học từ mới, luyện ngữ pháp và thử sức với ba
+            trò chơi.
           </p>
           <div className="actions">
             <ActionLink to="/topics">Bắt đầu khám phá</ActionLink>
-            <ActionLink secondary to="/play/my-neighbourhood/quick-quiz">
+            <ActionLink secondary to="/demo">
               Chơi thử ngay
             </ActionLink>
           </div>
@@ -86,62 +89,81 @@ export function HomePage() {
             bạn
           </p>
         </div>
-        <div className="hero-art">
-          <img
-            src="/images/neighbourhood-map.svg"
-            alt="Bản đồ khám phá khu phố với phòng tranh, nhà thờ, ngôi đền, quảng trường và nhà ga"
-          />
-          <div className="map-label">
-            <MapPin size={21} />
-            <div>
-              <strong>My Neighbourhood</strong>
-              <span>Trạm khám phá đầu tiên · Lớp 6</span>
-            </div>
-          </div>
-          <span className="map-stamp">
-            <CompassMark />
-            Your next adventure
-          </span>
+        <div className="home-topic-map" aria-label="Khám phá bốn chủ đề">
+          {topics.map((item) => (
+            <Link key={item.id} to={`/topics/${item.id}`}>
+              <img src={item.imagePath} alt={item.imageAlt} />
+              <span>
+                <small>Unit {item.unit}</small>
+                <strong>{item.titleEn}</strong>
+              </span>
+            </Link>
+          ))}
         </div>
+      </section>
+      <section className="quest-invitation">
+        <div>
+          <h2>Một bản đồ. Ba chìa khóa. Một kho báu.</h2>
+          <p>
+            Săn tìm dấu vết, lật thẻ bí mật và giải mật thư trong{' '}
+            {topic.titleEn}.
+          </p>
+        </div>
+        <ActionLink to={`/quest/${topic.id}`}>Bắt đầu Quest</ActionLink>
       </section>
       <section className="learning-section">
         <div className="section-heading">
           <h2>Chọn hành trình của bạn</h2>
-          <p>Học một chút. Chơi một vòng. Nhớ lâu hơn.</p>
+          <p>Chọn chủ đề để học từ vựng, ôn ngữ pháp và chơi ngay bên dưới.</p>
+          <label className="home-topic-picker">
+            Chủ đề học và chơi
+            <select
+              value={topicId}
+              onChange={(event) => setTopicId(event.target.value)}
+            >
+              {topics.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.titleEn}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
         <div className="learning-paths">
           <Link
             className="learning-path vocab-path"
-            to="/topics/my-neighbourhood/vocabulary"
+            to={`/topics/${topic.id}/vocabulary`}
           >
             <div className="path-symbol">
               <BookOpen size={32} />
             </div>
             <div>
               <h3>Vocabulary Explorer</h3>
-              <p>9 từ mới đưa bạn đi khắp khu phố.</p>
+              <p>
+                {topic.vocabulary.length} từ mới · {topic.titleEn}
+              </p>
               <strong>
                 Khám phá từ vựng <ArrowRight size={18} />
               </strong>
             </div>
-            <img src="/images/neighbourhood/art-gallery.svg" alt="" />
+            <img src={topic.vocabulary[0].imagePath} alt="" />
           </Link>
           <Link
             className="learning-path grammar-path"
-            to="/topics/my-neighbourhood/grammar"
+            to={`/topics/${topic.id}/grammar`}
           >
             <div className="path-symbol">
               <Flag size={32} />
             </div>
             <div>
               <h3>Grammar Hero</h3>
-              <p>So sánh những điều thân thuộc quanh em.</p>
+              <p>{topic.grammarTitle}</p>
               <strong>
                 Chinh phục ngữ pháp <ArrowRight size={18} />
               </strong>
             </div>
             <span className="grammar-art" aria-hidden="true">
-              big<span>bigger</span>
+              <BookOpen size={46} />
             </span>
           </Link>
         </div>
@@ -149,9 +171,12 @@ export function HomePage() {
       <section className="challenge-section">
         <div className="section-heading">
           <h2>Ba cách chơi. Một hành trình tiến bộ.</h2>
-          <p>Chọn thử thách và biến kiến thức thành kỹ năng.</p>
+          <p>
+            {topic.titleEn} · Mỗi trò chơi có 5 câu hoặc cặp ghép, cùng phản hồi
+            và giải thích.
+          </p>
         </div>
-        <GameLinks />
+        <GameLinks topicId={topic.id} />
       </section>
       <section className="local-note">
         <CheckCircle2 size={23} />
@@ -164,20 +189,6 @@ export function HomePage() {
         </Link>
       </section>
     </>
-  );
-}
-function CompassMark() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.7" />
-      <path d="m16 8-3 6-5 2 2-5Z" fill="currentColor" />
-    </svg>
   );
 }
 export function TopicsPage() {
@@ -257,6 +268,17 @@ export function TopicPage() {
           </div>
         </div>
         <img src={topic.imagePath} alt={topic.imageAlt} />
+      </section>
+      <section className="quest-invitation">
+        <div>
+          <h2>Hành trình ba chìa khóa</h2>
+          <p>
+            {(progress.completedQuestIds ?? []).includes(topic.id)
+              ? 'Bạn đã mở rương kho báu. Sẵn sàng khám phá lại?'
+              : 'Tìm dấu vết, ghép thẻ và giải mật thư để mở rương kho báu.'}
+          </p>
+        </div>
+        <ActionLink to={`/quest/${topic.id}`}>Bắt đầu Quest</ActionLink>
       </section>
       <div className="section-heading">
         <h2>Học trước, tự tin hơn</h2>
