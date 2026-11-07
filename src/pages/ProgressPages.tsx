@@ -10,6 +10,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { ActionLink, BackLink, EmptyState, Modal } from '../components/Common';
+import { PublishScore } from '../components/PublishScore';
 import { useProgress } from '../contexts/ProgressContext';
 import { gameIds, gameInfo, topics } from '../data/neighbourhood';
 import { badges, badgesForRun } from '../lib/gameLogic';
@@ -122,6 +123,7 @@ export function ResultsPage() {
           Học lại {info.branch === 'vocabulary' ? 'từ vựng' : 'ngữ pháp'}
         </ActionLink>
       </div>
+      <PublishScore key={run.id} run={run} />
       {earned.length > 0 && (
         <section className="result-badges">
           <h2>Huy hiệu đạt được trong lượt này</h2>
@@ -451,8 +453,9 @@ export function SettingsPage() {
       </div>
       <p className="privacy-note">
         <ShieldCheck size={20} />
-        Dữ liệu chỉ lưu trong trình duyệt của bạn. Ứng dụng không gửi tiến độ
-        hay biệt danh của bạn đến máy chủ.
+        Tiến độ học lưu trong trình duyệt. Khi bạn bấm Đăng điểm, biệt danh và
+        kết quả lượt thử thách được gửi lên bảng xếp hạng công khai. Xóa tiến độ
+        ở đây không gỡ điểm đã đăng; hãy gỡ tại trang Xếp hạng trước.
       </p>
       {confirm && (
         <Modal

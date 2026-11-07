@@ -1,0 +1,4 @@
+{
+  "topics": ["my-new-school", "my-house", "my-friends", "my-neighbourhood"],
+  "games": { "word-match": 90, "quick-quiz": 90, "sentence-builder": 150 }
+}

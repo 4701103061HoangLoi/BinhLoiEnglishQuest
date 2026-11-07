@@ -24,6 +24,7 @@ import {
   AchievementsPage,
   SettingsPage,
 } from '../pages/ProgressPages';
+import { LeaderboardPage } from '../pages/LeaderboardPage';
 import { BackgroundMusic } from '../components/BackgroundMusic';
 import { EmptyState } from '../components/Common';
 import { ProgressProvider, useProgress } from '../contexts/ProgressContext';
@@ -65,6 +66,10 @@ function Layout() {
             <NavLink to="/achievements">
               <Trophy size={18} />
               Thành tích
+            </NavLink>
+            <NavLink to="/leaderboard">
+              <Trophy size={18} />
+              Xếp hạng
             </NavLink>
             <NavLink to="/settings">
               <Settings size={18} />
@@ -113,6 +118,7 @@ const router = createBrowserRouter([
       { path: '/play/:topicId/:gameId', element: <GamePage /> },
       { path: '/results/:runId', element: <ResultsPage /> },
       { path: '/achievements', element: <AchievementsPage /> },
+      { path: '/leaderboard', element: <LeaderboardPage /> },
       { path: '/settings', element: <SettingsPage /> },
       { path: '*', element: <EmptyState title="Không tìm thấy trang" /> },
     ],

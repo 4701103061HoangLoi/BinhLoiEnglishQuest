@@ -1,6 +1,6 @@
 # Bình Lợi English Quest
 
-Website học tiếng Anh lớp 6 qua bốn chủ đề, bài học Vocabulary/Grammar và ba game thật. Không đăng nhập, không backend, không API key. Nội dung theo `BINH_LOI_ENGLISH_QUEST_PRD.md`.
+Website học tiếng Anh lớp 6 qua bốn chủ đề, bài học Vocabulary/Grammar và ba game thật. Không đăng nhập, không API key. Bảng xếp hạng chung chạy bằng máy chủ Node.js đi kèm. Nội dung theo `BINH_LOI_ENGLISH_QUEST_PRD.md`.
 
 ## Chạy dự án
 
@@ -70,13 +70,13 @@ Nội dung mới nằm trong `src/data/firstUnits.ts`; đăng ký chủ đề tr
 
 Khóa `bleq_progress_v1`, schema version 1: biệt danh, cài đặt, từ/bài đã xem, 30 lượt gần nhất, huy hiệu. Badge được giữ khi lịch sử cũ bị giới hạn. Kỷ lục là giá trị suy ra từ lịch sử đang lưu, không phải kỷ lục toàn thời gian hoặc toàn trường. Mỗi run ID chỉ được ghi một lần. Lượt đang chơi không phục hồi sau refresh; trình duyệt cảnh báo trước khi rời. Hủy xóa không thay đổi dữ liệu; xác nhận xóa chỉ xóa khóa của ứng dụng.
 
-Storage bị chặn/đầy: vẫn chơi trong bộ nhớ và có cảnh báo. JSON hỏng hoặc version lạ: không ghi đè dữ liệu cũ; có thể đặt lại chủ động qua Cài đặt. Trình duyệt riêng tư/xóa cache có thể làm mất tiến độ. Không thu thập thông tin cá nhân, không analytics hay đồng bộ máy khác.
+Storage bị chặn/đầy: vẫn chơi trong bộ nhớ và có cảnh báo. JSON hỏng hoặc version lạ: không ghi đè dữ liệu cũ; có thể đặt lại chủ động qua Cài đặt. Trình duyệt riêng tư/xóa cache có thể làm mất tiến độ. Không analytics. Tiến độ không đồng bộ máy khác. Chỉ khi người chơi bấm Đăng điểm, biệt danh và kết quả thử thách mới được gửi lên bảng xếp hạng chung; cookie ẩn danh nhận diện trình duyệt trong tối đa một năm. Có thể gỡ toàn bộ điểm đã đăng tại `/leaderboard` trên cùng trình duyệt. Xóa tiến độ trong Cài đặt không gỡ điểm trên máy chủ; hãy gỡ điểm trước khi xóa cookie.
 
 ## Deploy static
 
 `npm run build`, đưa `dist/` lên hosting. Netlify: build command `npm run build`, publish `dist`; `public/_redirects` đã cấu hình fallback SPA. Vercel: Vite preset, output `dist`; `vercel.json` có rewrite cho route. Hosting khác phải rewrite URL không phải file về `index.html` để refresh `/play/...` hoạt động. Cấu hình hiện tại phục vụ tại domain root; subpath cần chỉnh Vite `base`, router basename và đường dẫn asset.
 
-Nội dung/game không gọi network sau khi tải JavaScript và SVG; không cam kết PWA/offline reload. Không triển khai Speaking, Listening, AI, Supabase, đăng nhập hay bảng xếp hạng từ xa.
+Bản static vẫn học và chơi được, nhưng bảng xếp hạng cần máy chủ bên dưới; chỉ chép `dist/` sẽ không có API lưu điểm chung. Không cam kết PWA/offline reload. Không triển khai Speaking, Listening, AI, Supabase hay đăng nhập.
 
 ## Kiểm tra demo
 
@@ -165,3 +165,32 @@ Nút **Nhạc nền** ở đầu trang điều khiển bản nhạc không lời
 ## Phiên âm từ vựng
 
 Cả 36 từ của bốn chủ đề có phiên âm IPA Anh-Mỹ, hiển thị dưới từ tiếng Anh trong trang từ vựng và phần học của Quest. Phiên âm được lưu cục bộ trong trường `phonetic` của mỗi từ; khi thêm từ, điền phiên âm trong dấu `/…/` ở cuối hàng dữ liệu từ vựng. Tham khảo cách ghi IPA tại [Cambridge Dictionary](https://dictionary.cambridge.org/pronunciation/english/). Nút nghe vẫn đọc từ bằng giọng `en-US` có sẵn trên thiết bị; giọng thực tế tùy hệ điều hành.
+
+## Bảng xếp hạng chung và triển khai trên máy ảo
+
+- `/leaderboard`: xem 50 người đứng đầu, lọc chủ đề/trò chơi, làm mới và xem hạng của mình. Mỗi trình duyệt có một danh tính ẩn danh riêng; trùng biệt danh vẫn là hai người. Đổi máy hoặc xóa cookie không khôi phục được danh tính cũ.
+- Từ trang kết quả **Thử thách**, nhập biệt danh rồi bấm **Đăng điểm** để công khai điểm lượt đó. Luyện tập và Quest không ghi điểm lên bảng này. Không tự đăng lịch sử cũ hay dữ liệu học tập.
+- Mỗi người giữ kỷ lục ở 12 mục (4 chủ đề × 3 trò); tổng điểm là tổng các kỷ lục khớp bộ lọc. Đăng lại hoặc đăng điểm thấp hơn không cộng thêm điểm. Bằng điểm cùng hạng; thứ tự hiển thị phụ theo biệt danh. Trò 90 giây hiện đạt tối đa 56 điểm, trò 150 giây tối đa 60 điểm theo công thức hiện có.
+- Nút **Gỡ toàn bộ điểm tôi đã đăng** có xác nhận, chỉ gỡ dữ liệu của trình duyệt hiện tại; không xóa tiến độ học cục bộ. Không dùng tên thật, số điện thoại hoặc tên lớp làm biệt danh.
+
+Phát triển: chạy `npm start` ở một terminal (API cổng 3001), `npm run dev` ở terminal khác (Vite tự proxy `/api`).
+
+Chạy bản production trên máy ảo có Node.js 20.19+:
+
+```sh
+npm ci
+npm run test
+npm run build
+HOST=0.0.0.0 PORT=3001 npm start
+# Mở http://IP-MAY-AO:3001, phục vụ cả web và API
+```
+
+Máy chủ phục vụ `dist/` và `/api/leaderboard` cùng địa chỉ, có fallback React Router. Mặc định chỉ nghe `127.0.0.1:3001`; dùng `HOST=0.0.0.0` để truy cập LAN. Khi chạy sau reverse proxy HTTPS, giữ Node ở localhost, proxy toàn bộ website tới cổng 3001 và đặt `PUBLIC_ORIGIN=https://ten-mien-cua-ban` (không có dấu `/` cuối) để kiểm tra nguồn yêu cầu và bật cookie Secure. Không dùng `vite preview` làm máy chủ bảng xếp hạng.
+
+Dữ liệu ở `data/leaderboard.json`, không nằm trong `dist/` và không được Git theo dõi. Đổi vị trí bằng `LEADERBOARD_FILE=/duong-dan-co-quyen-ghi/leaderboard.json`. Chạy từ thư mục dự án; dùng systemd hoặc trình quản lý tiến trình để tự khởi động lại `npm start`, với WorkingDirectory đúng và thư mục dữ liệu tồn tại lâu dài. Giữ bản sao lưu file dữ liệu bên ngoài thư mục release; khi cập nhật, không xóa thư mục `data/`. File hỏng sẽ làm máy chủ dừng để bảo toàn dữ liệu; phục hồi bản sao lưu trước khi khởi động lại. Chỉ chạy **một tiến trình Node** ghi cùng file.
+
+Máy chủ không thêm thư viện: dùng [HTTP](https://nodejs.org/docs/latest-v20.x/api/http.html) và [filesystem](https://nodejs.org/docs/latest-v20.x/api/fs.html) của Node. Ghi file tạm rồi thay thế file chính; lưu thành công mới báo cho trình duyệt. Cookie HttpOnly chứa mã ngẫu nhiên, máy chủ chỉ lưu hash nhận diện. API giới hạn payload 4 KiB, kiểm tra chủ đề/trò, chế độ, biệt danh, thời gian và công thức điểm; tối đa 5.000 người, giới hạn tần suất ghi. Khi thêm chủ đề hoặc đổi thời gian game, cập nhật `server/rules.json`; test đối chiếu với dữ liệu game.
+
+**Giới hạn:** điểm vẫn do trình duyệt gửi lên, không xác minh đáp án hoặc danh tính trên máy chủ; có thể tạo thêm danh tính bằng trình duyệt khác. Đây là bảng thi đua học tập, không dùng làm kết quả thi có giải. File JSON và một tiến trình phù hợp quy mô lớp/trường nhỏ; cần cơ sở dữ liệu và xác minh lượt chơi nếu mở rộng hoặc cần chống gian lận. Chưa có kiểm duyệt tự động biệt danh; quản trị viên có thể dừng dịch vụ, sao lưu rồi gỡ bản ghi trong file khi cần.
+
+`npm run test` gồm kiểm thử giao diện và API thật: hai khách, điểm trùng, kỷ lục, lọc, đồng hạng, khởi động lại, gỡ riêng tư, yêu cầu sai nguồn và dữ liệu lỗi. `CHROMIUM_PATH=/duong-dan/chromium npm run test:e2e -- tests/e2e/leaderboard.spec.ts` kiểm tra đăng/gỡ từ hai trình duyệt với dữ liệu máy chủ tạm riêng; cấu hình tự build và mở server ở cổng 3011.

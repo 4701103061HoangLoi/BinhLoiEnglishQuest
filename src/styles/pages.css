@@ -1167,3 +1167,86 @@ select {
     font-size: 0.68rem;
   }
 }
+
+.ranking-board {
+  padding: clamp(16px, 3vw, 32px);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.ranking-scroll {
+  overflow-x: auto;
+}
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.ranking-table th,
+.ranking-table td {
+  padding: 16px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.ranking-table thead {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.ranking-table th[scope='row'] {
+  overflow-wrap: anywhere;
+}
+.ranking-table .is-mine {
+  background: var(--soft-blue);
+}
+.ranking-own {
+  padding: 12px 16px;
+  background: var(--soft-blue);
+  border-radius: 8px;
+  margin-top: 16px;
+}
+.ranking-you {
+  font-weight: 400;
+}
+.ranking-remove {
+  margin-top: 24px;
+}
+.publish-score {
+  padding: 24px;
+  background: var(--soft-blue);
+  border-radius: 16px;
+}
+.publish-score form {
+  margin-top: 16px;
+}
+.publish-score label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 650;
+}
+.publish-score .nickname-input {
+  max-width: 560px;
+}
+.publish-score .small {
+  margin-top: 8px;
+}
+@media (max-width: 560px) {
+  .ranking-table th,
+  .ranking-table td {
+    padding: 12px 6px;
+  }
+  .ranking-table {
+    font-size: 0.875rem;
+  }
+  .publish-score {
+    padding: 20px;
+  }
+}
+
+.ranking-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--teal);
+  font-weight: 650;
+  margin-bottom: 12px;
+}

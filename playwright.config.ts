@@ -12,9 +12,20 @@ export default defineConfig({
         }
       : {},
   },
-  webServer: {
-    command: 'npm run dev -- --host 127.0.0.1',
-    url: 'http://127.0.0.1:5173',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'npm run dev -- --host 127.0.0.1',
+      url: 'http://127.0.0.1:5173',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'npm run build && node server/index.mjs',
+      env: {
+        PORT: '3011',
+        LEADERBOARD_FILE: `/tmp/bleq-e2e-${process.pid}.json`,
+      },
+      url: 'http://127.0.0.1:3011/api/leaderboard',
+      reuseExistingServer: false,
+    },
+  ],
 });

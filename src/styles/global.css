@@ -581,3 +581,25 @@ html[data-reduced-motion='true'] *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
+
+@media (max-width: 1150px) {
+  .header-inner {
+    flex-wrap: wrap;
+    row-gap: 16px;
+  }
+  .site-header nav {
+    order: 1;
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+  .site-header nav a {
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+}
