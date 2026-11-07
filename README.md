@@ -18,7 +18,7 @@ Stack: React, React Router, TypeScript strict, Vite; CSS riêng và biểu tư�
 
 ## Các trang và cách chơi
 
-- `/`: giới thiệu bốn chủ đề đang hoạt động; chọn chủ đề để mở một hành trình học–chơi thống nhất. Nút Chơi thử ngay mở `/demo`: một câu chọn từ theo hình ngẫu nhiên từ năm đồ dùng đầu của Unit 1, xáo trộn ba lựa chọn, không đồng hồ và không lưu điểm; chọn sai được thử lại, chọn đúng có nút bắt đầu Unit 1.
+- `/`: giới thiệu bốn chủ đề đang hoạt động; chọn chủ đề để mở một hành trình học–chơi thống nhất. Nút Chơi thử ngay mở `/demo`: một câu chọn từ theo hình ngẫu nhiên từ cả 9 từ vựng của Unit 1, xáo trộn ba lựa chọn, không đồng hồ và không lưu điểm; chọn sai được thử lại, chọn đúng có nút bắt đầu Unit 1.
 - `/challenges`: tab Thử thách riêng cho Word Match, Quick Quiz và Sentence Builder; chọn một trong bốn chủ đề. Nút quay lại của game giữ đúng chủ đề trong tab.
 - `/topics`, `/topics/my-neighbourhood`: chọn chủ đề, theo dõi bài đã học và game đã hoàn thành.
 - `/topics/my-neighbourhood/vocabulary`: 9 thẻ từ, minh họa, ví dụ và đọc từ `en-US` khi bấm loa.
@@ -46,13 +46,13 @@ Phát âm luôn cần thao tác người dùng, không tự phát khi chuyển t
 - `public/images/neighbourhood/`: 9 SVG riêng; `neighbourhood-map.svg`: bản đồ trang chủ.
 - `tests/*.test.ts(x)`: logic, persistence, game interactions, routes, xác nhận thoát/xóa.
 
-Để thêm chủ đề: tạo dữ liệu theo `Topic`, thêm vào mảng `topics`, cung cấp ít nhất 5 từ có hình đầu tiên, 5 quiz, 5 câu xếp từ và bài giảng. Cấp ID ổn định, duy nhất; `correctOptionId` trỏ đến một option thực. Mỗi token có ID riêng ngay cả khi chữ lặp. Hình lưu dưới `public/images/<topic>/`. Chạy `validateTopic` và thêm test cho nội dung mới. Các route học/game dùng topic ID tự động; khai báo hình và thông tin bài học riêng trong Topic. Word Match dùng 5 từ đầu tiên cho Word Match, chọn 5 câu ngẫu nhiên cho hai game còn lại.
+Để thêm chủ đề: tạo dữ liệu theo `Topic`, thêm vào mảng `topics`, cung cấp ít nhất 5 từ có hình, 5 câu quiz, 5 câu xếp từ và bài giảng. Cấp ID ổn định, duy nhất; `correctOptionId` trỏ đến một option thực. Mỗi token có ID riêng ngay cả khi chữ lặp. Hình lưu dưới `public/images/<topic>/`. Chạy `validateTopic` và thêm test cho nội dung mới. Các route học/game dùng topic ID tự động; khai báo hình và thông tin bài học riêng trong Topic. Word Match chọn ngẫu nhiên 5 từ, chọn 5 câu ngẫu nhiên cho hai game còn lại.
 
 Sửa câu hỏi trong data, không hardcode đáp án vào UI. Test xác nhận shuffle giữ đúng ID, câu/token không thiếu, scoring/timeout/nhấp đúp, schema hỏng, quota và giới hạn lưu. Không đặt mục tiêu coverage giả; bổ sung test cho luật hoặc nhánh hành vi mới.
 
 ## Ba chủ đề mới
 
-Chọn tại `/topics`; mỗi chủ đề có 9 từ kèm SVG cục bộ, 5 quy tắc ngữ pháp, 5 câu Quick Quiz và 5 câu Sentence Builder. Word Match dùng 5 từ đầu tiên. Cả chế độ luyện tập/thử thách, điểm, huy hiệu và lưu tiến độ đều dùng chung hệ thống hiện có.
+Chọn tại `/topics`; mỗi chủ đề có 9 từ kèm SVG cục bộ, 5 quy tắc ngữ pháp, 20 câu Quick Quiz và 20 câu Sentence Builder. Mỗi lượt Word Match chọn ngẫu nhiên 5 trong 9 từ. Cả chế độ luyện tập/thử thách, điểm, huy hiệu và lưu tiến độ đều dùng chung hệ thống hiện có.
 
 | Chủ đề                 | Đường dẫn               | Ngữ pháp                          |
 | ---------------------- | ----------------------- | --------------------------------- |
@@ -96,7 +96,7 @@ E2E chơi đủ ba game, refresh kết quả/huy hiệu, xác nhận thoát, ki�
 
 ## Quest: hành trình ba chìa khóa
 
-Từ trang chủ hoặc trang chi tiết của mỗi chủ đề, chọn **Bắt đầu Quest** (`/quest/:topicId`). Bốn chủ đề đều có câu chuyện và rương kho báu riêng:
+Từ trang chủ hoặc trang chi tiết của mỗi chủ đề, chọn **Bắt đầu hành trình** (`/quest/:topicId`). Bốn chủ đề đều có câu chuyện và rương kho báu riêng:
 
 1. **Săn tìm dấu vết:** học ba từ đầu ngay trong Quest, rồi tìm đúng ba hình và cất vào túi đồ.
 2. **Cặp thẻ bí mật:** học sáu từ còn lại, rồi lật và ghi nhớ sáu thẻ để ghép ba cặp từ–hình. Word Match nằm trong mục Luyện thêm của chặng này.
@@ -108,7 +108,7 @@ Chìa khóa được lưu sau từng chặng trong `questCheckpoints` (trường
 
 Trang chủ và trang chủ đề dùng chung `JourneyOverview`; không còn tách Quest và Học trước/Thử sức thành hai nhánh. Hai trang bài học cũ vẫn dùng được và có nút trở về hành trình; nội dung bài học và tiến độ dùng chung với Quest.
 
-Câu chuyện: `src/data/quests.ts`. Luật ghép thẻ: `src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đầu để tìm hình, ba từ tiếp theo để ghép thẻ và câu xếp từ đầu tiên làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.
+Câu chuyện: `src/data/quests.ts`. Luật ghép thẻ: `src/lib/questLogic.ts`; học liệu lấy từ topic hiện có (ba từ đã học ở chặng đầu để tìm hình theo thứ tự ngẫu nhiên, ba từ chọn ngẫu nhiên trong sáu từ còn lại để ghép thẻ, và một câu ngẫu nhiên trong 20 câu xếp từ để làm mật thư). Khi thêm chủ đề, thêm câu chuyện có cùng topic ID để mở Quest. Kiểm thử: `tests/quest.test.ts`, `tests/e2e/adventure.spec.ts`.
 
 ## Nhân vật đồng hành Mây
 
@@ -120,7 +120,7 @@ Nhân vật là SVG cục bộ trong `src/components/QuestGuide.tsx`; CSS tại 
 
 Ba game dùng seed mới mỗi lượt: thứ tự câu hỏi, lựa chọn quiz, thẻ ghép và mảnh từ đều được xáo trộn. Quest cũng xáo trộn vị trí hình săn tìm, bộ thẻ ghi nhớ và mảnh từ mỗi lần bắt đầu nhiệm vụ. Vị trí giữ nguyên trong lúc trả lời, mở gợi ý hoặc thử sai để không làm gián đoạn việc ghi nhớ.
 
-Chơi thử lấy ngẫu nhiên một trong năm đồ dùng đầu của Unit 1, kèm hai lựa chọn nhiễu và vị trí đáp án ngẫu nhiên. Bấm Thử lại tạo câu mới khác câu vừa làm. Mở trang lần mới là một lần chọn ngẫu nhiên độc lập nên vẫn có thể gặp lại câu cũ. Cách chấm điểm, dữ liệu đã học và chìa khóa không thay đổi. Kiểm thử quy tắc nằm trong `tests/randomization.test.ts`.
+Chơi thử lấy ngẫu nhiên một trong 9 từ vựng của Unit 1, kèm hai lựa chọn nhiễu và vị trí đáp án ngẫu nhiên. Bấm Thử lại tạo câu mới khác câu vừa làm. Mở trang lần mới là một lần chọn ngẫu nhiên độc lập nên vẫn có thể gặp lại câu cũ. Cách chấm điểm, dữ liệu đã học và chìa khóa không thay đổi. Kiểm thử quy tắc nằm trong `tests/randomization.test.ts`.
 
 ## Âm báo câu trả lời và phát âm
 
@@ -132,6 +132,24 @@ Nhạc hiệu: `src/lib/feedbackAudio.ts`; kiểm thử `tests/audio.test.ts`, `
 
 ## Tab Thử thách và chuyển từ vựng
 
-Thanh điều hướng có tab **Thử thách** (`/challenges`). Chọn chủ đề để chơi Word Match, Quick Quiz và Sentence Builder; có thể mở trực tiếp, không cần bắt đầu Quest. Từ Quest, nút Mở tab Thử thách truyền chủ đề và ngữ cảnh hành trình, giữ nguyên chìa khóa khi chuyển trang. Trang Thử thách có nút quay lại hành trình; trang kết quả có cả Tiếp tục hành trình và Chọn thử thách khác. Bấm quay lại từ game mở trong tab đưa về đúng chủ đề đã chọn.
+Thanh điều hướng có tab **Thử thách** (`/challenges`). Chọn chủ đề để chơi Word Match, Quick Quiz và Sentence Builder; có thể mở trực tiếp, không cần bắt đầu Quest. Từ Quest, nút Đến trang Thử thách truyền chủ đề và ngữ cảnh hành trình, giữ nguyên chìa khóa khi chuyển trang. Trang Thử thách có nút quay lại hành trình; trang kết quả có cả Tiếp tục hành trình và Chọn thử thách khác. Bấm quay lại từ game mở trong tab đưa về đúng chủ đề đã chọn.
 
-Trong Quest, phần bài học không tự thu lại khi vừa xem thẻ cuối. Học sinh có thể nghe hoặc xem lại thẻ cuối; bấm **Xong phần học, vào nhiệm vụ** hoặc tự thu phần học khi sẵn sàng. Việc chuyển từ trong lúc phát âm vẫn hủy lượt đọc trước an toàn. Kiểm thử tại `tests/speech.test.tsx`, `tests/e2e/challenges.spec.ts` và `tests/e2e/adventure.spec.ts`.
+Trong Quest, phần bài học không tự thu lại khi vừa xem thẻ cuối. Học sinh có thể nghe hoặc xem lại thẻ cuối; bấm **Vào nhiệm vụ** hoặc tự thu phần học khi sẵn sàng. Việc chuyển từ trong lúc phát âm vẫn hủy lượt đọc trước an toàn. Kiểm thử tại `tests/speech.test.tsx`, `tests/e2e/challenges.spec.ts` và `tests/e2e/adventure.spec.ts`.
+
+## Câu chữ giao diện
+
+Dùng tiếng Việt ngắn, cụ thể cho hướng dẫn và phản hồi; giữ tên trò chơi, từ vựng, câu mẫu và đáp án bằng tiếng Anh. Lời thoại Mây tập trung vào việc cần làm tiếp theo, giữ giọng thân thiện với học sinh. Các trang dùng nhất quán “hành trình”, “chặng”, “Thử thách” và “Thành tích”. Khi đổi nhãn nút, cập nhật kiểm thử tương tác theo cùng nhãn.
+
+## Bộ câu hỏi mở rộng
+
+Mỗi chủ đề có **20 câu Quick Quiz và 20 câu Sentence Builder**: tổng cộng 160 câu cho bốn chủ đề. Nội dung nằm trực tiếp trong `src/data/firstUnits.ts` và `src/data/neighbourhood.ts`, kèm đáp án và giải thích tiếng Việt. Câu mới được thêm sau các câu cũ để giữ nguyên ID và không ảnh hưởng lịch sử đã lưu.
+
+Mỗi lượt chơi chọn 5 câu khác nhau bằng seed mới; trộn thứ tự câu hỏi, đáp án và mảnh từ. Word Match lấy 5 từ khác nhau từ cả 9 từ của chủ đề. Quest chọn ngẫu nhiên một mật thư từ 20 câu và 3 cặp thẻ từ nhóm đã học; câu được giữ nguyên khi đang trả lời. Chơi thử dùng cả 9 từ Unit 1. Các lượt độc lập vẫn có thể gặp lại một số câu cũ.
+
+Bổ sung câu hỏi bằng cách thêm hàng vào mảng quiz/sentences trong topic; không đổi thứ tự hoặc ID câu đã có. Với dữ liệu mới, kiểm tra một đáp án rõ ràng, không trùng câu, đủ token và giải thích. `tests/questionBank.test.ts` kiểm tra nội dung, khả năng lấy mẫu toàn bộ bộ câu hỏi qua nhiều seed, không trùng câu trong lượt và không làm đổi dữ liệu nguồn.
+
+## Hiệu ứng xếp câu
+
+Trong Sentence Builder và mật thư Quest, từ bay từ kho lên vị trí trong câu khi chọn, rồi bay xuống đúng ô cũ khi bỏ chọn. Làm lại câu/Xếp lại đưa toàn bộ từ đang chọn về kho. Chuyển động kéo dài 280 ms và không trì hoãn việc cập nhật đáp án; dùng được bằng chạm và bàn phím. Khi bật Giảm chuyển động trong Cài đặt hoặc hệ điều hành, từ chuyển vị trí ngay. Trình duyệt không hỗ trợ Web Animations vẫn thao tác bình thường. Hiệu ứng đang chạy được hủy khi chuyển câu hoặc rời màn chơi.
+
+Hook dùng chung: `src/games/useTokenFlight.ts`. Kiểm thử thao tác chọn/bỏ nhanh, đặt lại câu và hai tùy chọn giảm chuyển động: `tests/e2e/token-flight.spec.ts`.

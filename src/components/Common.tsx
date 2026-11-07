@@ -52,7 +52,7 @@ export function ActionLink({
   );
 }
 export function EmptyState({
-  title = 'Chưa có gì ở đây',
+  title = 'Chưa có nội dung',
   children,
 }: {
   title?: string;
@@ -64,7 +64,7 @@ export function EmptyState({
       <h1>{title}</h1>
       <p>
         {children ||
-          'Đường dẫn này không tồn tại. Hãy quay lại và tiếp tục khám phá nhé.'}
+          'Trang này không có nội dung. Bạn có thể chọn một chủ đề khác.'}
       </p>
       <ActionLink to="/topics">Khám phá chủ đề</ActionLink>
     </section>

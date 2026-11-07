@@ -64,7 +64,7 @@ export function createRunQuestions(topic: Topic, seed: number) {
   )
     throw new Error('Chủ đề cần ít nhất 5 mục cho mỗi trò chơi.');
   const random = randomFromSeed(seed);
-  const match = shuffle(topic.vocabulary.slice(0, 5), random);
+  const match = shuffle(topic.vocabulary, random).slice(0, 5);
   return {
     match,
     images: shuffle(match, random),

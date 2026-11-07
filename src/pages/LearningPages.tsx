@@ -80,15 +80,15 @@ export function HomePage() {
       <section className="hero">
         <div className="hero-copy">
           <h1>
-            Học tiếng Anh qua những cuộc <span>phiêu lưu!</span>
+            Học tiếng Anh từ <span>những điều quen thuộc</span>
           </h1>
           <p className="hero-english" lang="en">
-            Learn English through fun challenges!
+            Grade 6 · Vocabulary and grammar
           </p>
           <p className="lead">
-            Khám phá trường học, ngôi nhà, bạn bè và khu phố qua {topics.length}{' '}
-            chủ đề tiếng Anh lớp 6. Học từ mới, luyện ngữ pháp và thử sức với ba
-            trò chơi.
+            Có {topics.length} chủ đề về trường học, nhà ở, bạn bè và khu phố.
+            Học từ mới, ôn ngữ pháp rồi làm nhiệm vụ để nhận chìa khóa. Bạn cũng
+            có thể chọn trò chơi riêng ở mục Thử thách.
           </p>
           <div className="actions">
             <ActionLink to="/topics">Bắt đầu khám phá</ActionLink>
@@ -97,8 +97,8 @@ export function HomePage() {
             </ActionLink>
           </div>
           <p className="hero-note">
-            <CheckCircle2 size={16} /> Không cần đăng nhập · Học theo nhịp của
-            bạn
+            <CheckCircle2 size={16} /> Không cần đăng nhập · Có thể dừng và học
+            tiếp
           </p>
         </div>
         <div className="home-topic-map" aria-label="Khám phá bốn chủ đề">
@@ -115,7 +115,7 @@ export function HomePage() {
       </section>
       <section className="learning-section">
         <label className="home-topic-picker">
-          Chủ đề học và chơi
+          Chọn chủ đề
           <select
             value={topicId}
             onChange={(event) => setTopicId(event.target.value)}
@@ -132,8 +132,8 @@ export function HomePage() {
       <section className="local-note">
         <CheckCircle2 size={23} />
         <p>
-          <strong>Thành tích của riêng bạn.</strong> Tiến độ và huy hiệu được
-          lưu trên thiết bị này. Không tài khoản, không áp lực xếp hạng.
+          <strong>Tiến độ được lưu trên máy này.</strong> Bạn có thể quay lại
+          học tiếp trên cùng trình duyệt.
         </p>
         <Link to="/achievements">
           Xem thành tích <ArrowRight size={16} />
@@ -147,9 +147,9 @@ export function TopicsPage() {
   return (
     <>
       <div className="page-heading">
-        <h1>Đi đâu học hôm nay?</h1>
+        <h1>Chọn chủ đề</h1>
         <p className="lead">
-          Chọn một chủ đề và bắt đầu hành trình tiếng Anh của bạn.
+          Mỗi chủ đề có bài học từ vựng, ngữ pháp và ba nhiệm vụ.
         </p>
       </div>
       <div className="topic-list">
@@ -172,7 +172,7 @@ export function TopicsPage() {
               </p>
               <strong>
                 {progress.completedRuns.some((r) => r.topicId === topic.id)
-                  ? 'Tiếp tục khám phá'
+                  ? 'Học tiếp'
                   : 'Bắt đầu hành trình'}{' '}
                 <ArrowRight size={18} />
               </strong>
@@ -251,10 +251,14 @@ export function VocabularyLesson({
         <BackLink to={`/quest/${topic.id}`}>Về hành trình</BackLink>
       )}
       <div className="page-heading compact">
-        {embedded ? <h3>Hành trang từ vựng</h3> : <h1>Vocabulary Explorer</h1>}
+        {embedded ? (
+          <h3>Từ vựng của chặng này</h3>
+        ) : (
+          <h1>Vocabulary Explorer</h1>
+        )}
         <p className="lead">
-          Khám phá {topic.vocabulary.length} từ mới trong chủ đề {topic.titleEn}
-          .
+          {topic.vocabulary.length} từ trong chủ đề {topic.titleEn}. Chọn từ để
+          xem nghĩa, nghe phát âm và đọc ví dụ.
         </p>
       </div>
       <div className="vocab-layout">
@@ -301,8 +305,8 @@ export function VocabularyLesson({
           </div>
         </section>
         <aside className="word-index">
-          <h2>Từ điển bỏ túi</h2>
-          <p className="muted small">Chọn từ để xem lại bất cứ lúc nào.</p>
+          <h2>Danh sách từ</h2>
+          <p className="muted small">Chọn một từ để xem nghĩa và ví dụ.</p>
           {topic.vocabulary.map((v, i) => (
             <button
               key={v.id}
@@ -321,8 +325,8 @@ export function VocabularyLesson({
       {!embedded && (
         <div className="lesson-end">
           <div>
-            <h2>Sẵn sàng ôn lại từ mới?</h2>
-            <p>Ghép từ với hình để kiểm tra trí nhớ của bạn.</p>
+            <h2>Ôn lại từ vừa học</h2>
+            <p>Quay lại hành trình để dùng những từ này trong nhiệm vụ.</p>
           </div>
           <ActionLink to={`/quest/${topic.id}`}>Tiếp tục hành trình</ActionLink>
         </div>

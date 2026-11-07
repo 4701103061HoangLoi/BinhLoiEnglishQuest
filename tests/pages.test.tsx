@@ -119,12 +119,9 @@ describe('routes and user interactions', () => {
           document.querySelector('.home-topic-map') as HTMLElement,
         ).getByRole('link', { name: new RegExp(topic.titleEn) }),
       ).toHaveAttribute('href', `/topics/${topic.id}`);
-      await user.selectOptions(
-        screen.getByLabelText('Chủ đề học và chơi'),
-        topic.id,
-      );
+      await user.selectOptions(screen.getByLabelText('Chọn chủ đề'), topic.id);
       expect(
-        screen.getByRole('link', { name: 'Bắt đầu Quest' }),
+        screen.getByRole('link', { name: 'Bắt đầu hành trình' }),
       ).toHaveAttribute('href', `/quest/${topic.id}`);
       expect(
         screen.getByRole('region', { name: `Hành trình ${topic.titleEn}` }),
@@ -179,18 +176,21 @@ describe('routes and user interactions', () => {
       'my-neighbourhood',
     );
     expect(history()).toHaveLength(2);
-    await user.selectOptions(screen.getByLabelText('Lọc game'), 'quick-quiz');
+    await user.selectOptions(
+      screen.getByLabelText('Lọc trò chơi'),
+      'quick-quiz',
+    );
     expect(history()).toHaveLength(1);
     expect(history()[0]).toHaveAttribute('href', '/results/quiz');
     await user.selectOptions(
-      screen.getByLabelText('Lọc game'),
+      screen.getByLabelText('Lọc trò chơi'),
       'sentence-builder',
     );
     expect(screen.getByText('Chưa có lượt chơi phù hợp')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Xóa bộ lọc' }));
     expect(history()).toHaveLength(3);
     expect(screen.getByLabelText('Lọc chủ đề')).toHaveValue('all');
-    expect(screen.getByLabelText('Lọc game')).toHaveValue('all');
+    expect(screen.getByLabelText('Lọc trò chơi')).toHaveValue('all');
     expect(localStorage.getItem(STORAGE_KEY)).toBe(saved);
   });
   it('handles invalid topic/game/result routes', () => {

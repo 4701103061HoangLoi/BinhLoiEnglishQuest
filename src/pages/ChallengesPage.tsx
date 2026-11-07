@@ -16,8 +16,8 @@ export function ChallengesPage() {
       <div className="page-heading">
         <h1>Thử thách tiếng Anh</h1>
         <p className="lead">
-          Ghép từ, chọn đáp án hoặc xếp câu. Chọn chủ đề và trò chơi bạn muốn
-          chinh phục.
+          Ghép từ, chọn đáp án hoặc xếp câu. Chọn chủ đề rồi chọn một trò chơi
+          bên dưới.
         </p>
         <label className="home-topic-picker">
           Chủ đề thử thách

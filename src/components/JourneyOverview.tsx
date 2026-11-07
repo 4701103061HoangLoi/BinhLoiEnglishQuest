@@ -18,7 +18,7 @@ export function JourneyOverview({ topic }: { topic: Topic }) {
       aria-label={`Hành trình ${topic.titleEn}`}
     >
       <div className="section-heading">
-        <h2>Học và chơi trên cùng một hành trình</h2>
+        <h2>Các chặng học</h2>
         <p>
           {topic.titleEn} · {Math.min(stage, 3)}/3 chìa khóa · Đã xem {visited}/
           {topic.vocabulary.length} từ vựng
@@ -53,7 +53,7 @@ export function JourneyOverview({ topic }: { topic: Topic }) {
       <ActionLink to={`/quest/${topic.id}`}>
         {stage > 0 || progress.questCheckpoints?.[topic.id] === 0
           ? 'Tiếp tục hành trình'
-          : 'Bắt đầu Quest'}
+          : 'Bắt đầu hành trình'}
       </ActionLink>
     </section>
   );

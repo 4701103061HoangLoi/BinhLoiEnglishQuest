@@ -179,7 +179,7 @@ export function useGame(
         answer: correct ? item.term : '',
         text: correct
           ? `Chính xác! ${item.term}: ${item.meaningVi}.`
-          : 'Try again! Hai thẻ chưa khớp. Hãy quan sát hình rồi thử lại. −5 điểm.',
+          : 'Hai thẻ chưa khớp. Quan sát hình rồi ghép lại. −5 điểm.',
       },
     };
     commit(next);

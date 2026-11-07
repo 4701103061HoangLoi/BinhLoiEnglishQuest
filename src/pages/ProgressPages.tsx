@@ -20,8 +20,8 @@ export function ResultsPage() {
   if (!run)
     return (
       <EmptyState title="Không tìm thấy lượt chơi">
-        Lượt chơi có thể đã bị xóa hoặc không còn trong 30 lượt gần nhất. Hãy
-        bắt đầu một thử thách mới nhé.
+        Lượt chơi này có thể đã bị xóa hoặc nằm ngoài 30 lượt được lưu gần nhất.
+        Bạn có thể chọn trò chơi khác để bắt đầu lại.
       </EmptyState>
     );
   const info = gameInfo[run.gameId];
@@ -43,16 +43,18 @@ export function ResultsPage() {
         </div>
         <h1>
           {run.finishedBy === 'timeout'
-            ? 'Hết giờ, nhưng chưa hết cơ hội!'
+            ? 'Đã hết giờ'
             : run.correctCount === 5
-              ? 'Bạn đã chinh phục thử thách!'
-              : 'Mỗi lần thử, một bước tiến!'}
+              ? 'Hoàn thành lượt chơi'
+              : 'Kết quả lượt chơi'}
         </h1>
         <p>
           {progress.nickname},{' '}
           {run.correctCount === 5
-            ? 'hãy giữ vững phong độ nhé.'
-            : 'xem lại đáp án rồi thử thêm một lần nhé.'}
+            ? run.gameId === 'word-match'
+              ? 'bạn đã ghép đủ 5 cặp.'
+              : 'bạn trả lời đúng 5/5 câu.'
+            : 'xem lại đáp án ở bên dưới rồi thử thêm một lượt.'}
         </p>
         <span className="pill">
           {info.title} ·{' '}
@@ -137,7 +139,7 @@ export function ResultsPage() {
         </section>
       )}
       <section className="answer-review">
-        <h2>Cùng nhìn lại</h2>
+        <h2>Xem lại đáp án</h2>
         {run.answers.map((answer) => (
           <article key={answer.questionId}>
             <CheckCircle2
@@ -176,18 +178,20 @@ export function AchievementsPage() {
   return (
     <>
       <div className="page-heading">
-        <h1>Những bước tiến của bạn</h1>
+        <h1>Thành tích của bạn</h1>
         <p className="lead">
-          Xin chào {progress.nickname}! Mỗi thử thách là một điều đáng tự hào.
+          {progress.nickname}, đây là huy hiệu và kết quả các lượt chơi của bạn.
         </p>
         <p className="privacy-note">
           <ShieldCheck size={17} />
-          Thành tích cá nhân trên thiết bị này · Không đồng bộ tài khoản
+          Kết quả được lưu trong trình duyệt này.
         </p>
       </div>
       <section className="challenge-section">
-        <h2>Hành trình đã chinh phục</h2>
-        <p className="muted">Mở rương sau ba nhiệm vụ để lưu dấu mốc Quest.</p>
+        <h2>Hành trình đã hoàn thành</h2>
+        <p className="muted">
+          Các chủ đề bạn đã hoàn thành cả ba nhiệm vụ và mở rương.
+        </p>
         <div className="quest-collection">
           {topics
             .filter((topic) =>
@@ -202,8 +206,7 @@ export function AchievementsPage() {
         </div>
         {!(progress.completedQuestIds ?? []).length && (
           <p>
-            Chưa mở rương nào.{' '}
-            <Link to="/topics">Chọn chủ đề để bắt đầu Quest</Link>.
+            Chưa mở rương nào. <Link to="/topics">Chọn chủ đề để bắt đầu</Link>.
           </p>
         )}
       </section>
@@ -274,8 +277,8 @@ export function AchievementsPage() {
           <div>
             <h2>5 lượt chơi gần nhất</h2>
             <p className="muted">
-              {filtered.length}/{progress.completedRuns.length} lượt phù hợp{' '}
-              trên thiết bị
+              {filtered.length}/{progress.completedRuns.length} lượt khớp với bộ
+              lọc
             </p>
           </div>
           <div className="history-filters">
@@ -294,12 +297,12 @@ export function AchievementsPage() {
               </select>
             </label>
             <label className="filter-label">
-              Lọc game
+              Lọc trò chơi
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               >
-                <option value="all">Tất cả game</option>
+                <option value="all">Tất cả trò chơi</option>
                 {gameIds.map((id) => (
                   <option key={id} value={id}>
                     {gameInfo[id].title}
@@ -334,7 +337,7 @@ export function AchievementsPage() {
             <h3>
               {progress.completedRuns.length
                 ? 'Chưa có lượt chơi phù hợp'
-                : 'Hành trình đang chờ bạn'}
+                : 'Chưa có lượt chơi'}
             </h3>
             <p>
               {progress.completedRuns.length
@@ -367,8 +370,10 @@ export function SettingsPage() {
   return (
     <section className="settings narrow">
       <div className="page-heading">
-        <h1>Góc của bạn</h1>
-        <p className="lead">Một vài điều chỉnh để học theo cách bạn thích.</p>
+        <h1>Cài đặt</h1>
+        <p className="lead">
+          Đổi biệt danh, bật âm thanh hoặc đặt lại tiến độ.
+        </p>
       </div>
       <form
         onSubmit={(e) => {
@@ -377,7 +382,7 @@ export function SettingsPage() {
             ...p,
             nickname: nickname.trim() || 'Nhà thám hiểm',
           }));
-          setMessage('Đã cập nhật biệt danh trong phiên này.');
+          setMessage('Đã lưu biệt danh.');
         }}
       >
         <label htmlFor="nickname">Biệt danh của bạn</label>
@@ -434,7 +439,7 @@ export function SettingsPage() {
         />
       </div>
       <div className="settings-reset">
-        <h2>Bắt đầu hành trình mới</h2>
+        <h2>Xóa dữ liệu học tập</h2>
         <p>
           Xóa điểm, huy hiệu, bài đã xem và cài đặt trên trình duyệt này. Thao
           tác này không thể hoàn tác.
@@ -446,8 +451,8 @@ export function SettingsPage() {
       </div>
       <p className="privacy-note">
         <ShieldCheck size={20} />
-        Dữ liệu chỉ lưu trong trình duyệt của bạn. Không gửi thông tin học sinh
-        đến máy chủ.
+        Dữ liệu chỉ lưu trong trình duyệt của bạn. Ứng dụng không gửi tiến độ
+        hay biệt danh của bạn đến máy chủ.
       </p>
       {confirm && (
         <Modal

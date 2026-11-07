@@ -10,7 +10,7 @@ import { newSchool } from '../data/firstUnits';
 export function DemoPage() {
   const { progress } = useProgress();
   const [question, setQuestion] = useState(() =>
-    createDemoQuestion(newSchool.vocabulary.slice(0, 5), Math.random),
+    createDemoQuestion(newSchool.vocabulary, Math.random),
   );
   const { target, choices } = question;
   const [answer, setAnswer] = useState('');
@@ -19,7 +19,7 @@ export function DemoPage() {
     <section className="demo-page narrow">
       <BackLink to="/">Trang chủ</BackLink>
       <div className="page-heading compact">
-        <h1>Chơi thử một câu nhé!</h1>
+        <h1>Chơi thử</h1>
         <p className="lead">Nhìn hình và chọn từ tiếng Anh tương ứng.</p>
         <p className="muted small">
           Chỉ một câu mẫu · Không tính giờ · Không lưu điểm
@@ -60,7 +60,7 @@ export function DemoPage() {
           {correct
             ? `✓ Chính xác! ${target.term} nghĩa là ${target.meaningVi}.`
             : answer
-              ? `Chưa đúng rồi. Gợi ý: ${target.meaningVi} — thử chọn lại nhé!`
+              ? `Chưa đúng. Hình này là ${target.meaningVi}. Bạn chọn lại thử xem.`
               : 'Chạm hoặc dùng Tab và Enter để chọn.'}
         </QuestGuide>
         {correct && (
@@ -71,7 +71,7 @@ export function DemoPage() {
               onClick={() => {
                 setQuestion((current) =>
                   createDemoQuestion(
-                    newSchool.vocabulary.slice(0, 5),
+                    newSchool.vocabulary,
                     Math.random,
                     current.target.id,
                   ),

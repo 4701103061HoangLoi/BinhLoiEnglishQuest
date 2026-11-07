@@ -248,6 +248,7 @@
   margin-bottom: 24px;
 }
 .token {
+  position: relative;
   padding: 11px 16px;
   min-height: 44px;
   border: 1px solid #bccfc3;
@@ -371,6 +372,7 @@
     min-height: 150px;
   }
   .token {
+    position: relative;
     font-size: 0.9rem;
     padding: 11px 13px;
   }
@@ -399,4 +401,8 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 16px;
+}
+
+.sentence-workspace > p {
+  margin-top: 12px;
 }

@@ -1,20 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
+import { neighbourhood } from '../../src/data/neighbourhood';
 import { newSchool } from '../../src/data/firstUnits';
-const words = [
-  ['art gallery', 'phòng trưng bày nghệ thuật'],
-  ['cathedral', 'nhà thờ lớn'],
-  ['railway station', 'nhà ga xe lửa'],
-  ['temple', 'đền thờ'],
-  ['square', 'quảng trường'],
-];
-const sentences = [
-  'This street is busier than that street',
-  'The temple is older than the art gallery',
-  'My neighbourhood is more peaceful than the city centre',
-  'This square is bigger than that square',
-  'The railway station is more modern than the temple',
-];
 test('complete all games, persist badges and recover routes', async ({
   page,
 }) => {
@@ -81,22 +68,28 @@ test('complete all games, persist badges and recover routes', async ({
   await expect(page.locator('.result-summary')).toContainText('50/50');
   await page.goto('/play/my-neighbourhood/word-match');
   await page.getByRole('button', { name: 'Bắt đầu chơi' }).click();
+  const matchWords = (await page.locator('.word-tile').allTextContents()).map(
+    (term) => neighbourhood.vocabulary.find((word) => word.term === term)!,
+  );
   for (let i = 0; i < 2; i++) {
     await page
-      .getByRole('button', { name: 'art gallery', exact: true })
+      .getByRole('button', { name: matchWords[0].term, exact: true })
       .click();
     await page
-      .getByRole('button', { name: 'Chọn hình nhà thờ lớn', exact: true })
+      .getByRole('button', {
+        name: `Chọn hình ${matchWords[1].meaningVi}`,
+        exact: true,
+      })
       .click();
-    await expect(page.locator('.feedback')).toContainText('Try again');
+    await expect(page.locator('.feedback')).toContainText('Hai thẻ chưa khớp');
     await page.getByRole('button', { name: 'Tiếp tục ghép' }).click();
   }
-  for (const [word, meaning] of words) {
-    await page.getByRole('button', { name: word, exact: true }).click();
+  for (const [i, word] of matchWords.entries()) {
+    await page.getByRole('button', { name: word.term, exact: true }).click();
     await page
-      .getByRole('button', { name: `Chọn hình ${meaning}`, exact: true })
+      .getByRole('button', { name: `Chọn hình ${word.meaningVi}`, exact: true })
       .click();
-    if (word !== 'square')
+    if (i < 4)
       await page.getByRole('button', { name: 'Tiếp tục ghép' }).click();
   }
   await expect(page).toHaveURL(/\/results\//);
@@ -106,10 +99,14 @@ test('complete all games, persist badges and recover routes', async ({
   await page.getByRole('button', { name: 'Bắt đầu chơi' }).click();
   for (let i = 0; i < 5; i++) {
     const tokens = await page.locator('.token-bank button').allTextContents();
-    const target = sentences.find(
+    const sentence = neighbourhood.sentences.find(
       (sentence) =>
-        sentence.split(' ').sort().join('|') === [...tokens].sort().join('|'),
+        sentence.tokens
+          .map((token) => token.text)
+          .sort()
+          .join('|') === [...tokens].sort().join('|'),
     )!;
+    const target = sentence.tokens.map((token) => token.text).join(' ');
     expect(target).toBeTruthy();
     for (const word of target.split(' '))
       await page
@@ -233,9 +230,7 @@ test('touch tokens, keyboard answers and actual deadline timeout', async ({
   await expect(page.locator('.feedback')).toBeVisible();
   await page.clock.fastForward(91000);
   await expect(page).toHaveURL(/\/results\//);
-  await expect(
-    page.getByRole('heading', { name: 'Hết giờ, nhưng chưa hết cơ hội!' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Đã hết giờ' })).toBeVisible();
   const runs = await page.evaluate(
     () => JSON.parse(localStorage.getItem('bleq_progress_v1')!).completedRuns,
   );

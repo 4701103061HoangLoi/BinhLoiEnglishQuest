@@ -70,7 +70,7 @@ function Layout() {
               Cài đặt
             </NavLink>
           </nav>
-          <span className="header-note">Học vui. Nhớ lâu.</span>
+          <span className="header-note">Tiếng Anh lớp 6</span>
         </div>
       </header>
       {error && (
@@ -86,8 +86,8 @@ function Layout() {
           <Compass size={22} />
           Bình Lợi English Quest
         </Link>
-        <span>Sản phẩm học tập sáng tạo – Bình Lợi English Quest</span>
-        <span>Made for little discoveries.</span>
+        <span>Luyện từ vựng và ngữ pháp tiếng Anh lớp 6</span>
+        <span>Học và chơi cùng Mây</span>
       </footer>
     </>
   );
@@ -97,7 +97,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: (
       <EmptyState title="Trang chưa tải được">
-        Hãy tải lại trang để tiếp tục hành trình.
+        Bạn thử tải lại trang nhé.
       </EmptyState>
     ),
     children: [
@@ -113,7 +113,7 @@ const router = createBrowserRouter([
       { path: '/results/:runId', element: <ResultsPage /> },
       { path: '/achievements', element: <AchievementsPage /> },
       { path: '/settings', element: <SettingsPage /> },
-      { path: '*', element: <EmptyState title="Lạc đường một chút thôi!" /> },
+      { path: '*', element: <EmptyState title="Không tìm thấy trang" /> },
     ],
   },
 ]);

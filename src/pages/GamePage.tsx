@@ -12,6 +12,7 @@ import { BackLink, EmptyState, Modal, Picture } from '../components/Common';
 import { QuestGuide } from '../components/QuestGuide';
 import { GameSoundToggle } from '../components/GameSoundToggle';
 import { playFeedbackAudio } from '../lib/feedbackAudio';
+import { useTokenFlight } from '../games/useTokenFlight';
 import { useGame } from '../games/useGame';
 import { validateTopic } from '../lib/validation';
 import type { GameId, GameMode, Topic } from '../types';
@@ -134,6 +135,7 @@ function ActiveGame({
   const info = gameInfo[gameId];
   const q = questions.quiz[state.index];
   const sentence = questions.sentences[state.index];
+  const flight = useTokenFlight(state.selectedTokens, sentence.id);
   const count = gameId === 'word-match' ? state.matched.length : state.index;
   return (
     <section className="game-wrap">
@@ -252,8 +254,8 @@ function ActiveGame({
           </>
         )}
         {gameId === 'sentence-builder' && (
-          <>
-            <h2>Sắp xếp thành một câu so sánh</h2>
+          <div ref={flight.containerRef} className="sentence-workspace">
+            <h2>Sắp xếp thành một câu</h2>
             <p className="muted">
               Dùng tất cả các từ. Chạm vào từ trong câu để bỏ chọn.
             </p>
@@ -265,8 +267,12 @@ function ActiveGame({
                 <button
                   className="token selected"
                   key={id}
+                  data-token-id={id}
+                  data-token-zone="answer"
                   disabled={!!state.feedback}
-                  onClick={() => game.toggleToken(id)}
+                  onClick={(event) =>
+                    flight.move(event.currentTarget, () => game.toggleToken(id))
+                  }
                   aria-label={`Bỏ từ ${sentence.tokens.find((t) => t.id === id)!.text}`}
                 >
                   {sentence.tokens.find((t) => t.id === id)!.text}
@@ -278,10 +284,16 @@ function ActiveGame({
                 <button
                   className="token"
                   key={token.id}
+                  data-token-id={token.id}
+                  data-token-zone="bank"
                   disabled={
                     state.selectedTokens.includes(token.id) || !!state.feedback
                   }
-                  onClick={() => game.toggleToken(token.id)}
+                  onClick={(event) =>
+                    flight.move(event.currentTarget, () =>
+                      game.toggleToken(token.id),
+                    )
+                  }
                 >
                   {token.text}
                 </button>
@@ -291,7 +303,7 @@ function ActiveGame({
               <button
                 className="button secondary"
                 disabled={!state.selectedTokens.length || !!state.feedback}
-                onClick={game.clearTokens}
+                onClick={() => flight.reset(game.clearTokens)}
               >
                 <RotateCcw size={17} />
                 Làm lại câu
@@ -307,7 +319,7 @@ function ActiveGame({
                 Kiểm tra <Check size={18} />
               </button>
             </div>
-          </>
+          </div>
         )}
         <QuestGuide
           mood={
@@ -321,13 +333,13 @@ function ActiveGame({
         >
           {state.feedback
             ? state.feedback.correct
-              ? 'Làm tốt lắm! Cùng tiếp tục nào!'
-              : 'Không sao cả. Cùng đọc lời giải rồi thử ở câu tiếp theo nhé!'
+              ? 'Đúng rồi. Bạn có thể tiếp tục.'
+              : 'Xem đáp án và lời giải bên dưới trước khi tiếp tục.'
             : gameId === 'word-match'
-              ? 'Mình sẽ tìm cùng bạn! Chọn từ rồi chạm hình tương ứng nhé.'
+              ? 'Chọn một từ, rồi chọn hình tương ứng.'
               : gameId === 'quick-quiz'
-                ? 'Đọc kỹ câu hỏi rồi chọn đáp án. Mình ở đây cổ vũ bạn!'
-                : 'Chạm các từ theo thứ tự để ghép câu. Bạn có thể bỏ từ và xếp lại nhé.'}
+                ? 'Đọc câu hỏi rồi chọn một đáp án.'
+                : 'Chạm các từ để ghép câu. Chạm từ đã chọn để bỏ.'}
         </QuestGuide>
         {state.feedback && (
           <div
@@ -336,8 +348,8 @@ function ActiveGame({
           >
             <strong>
               {state.feedback.correct
-                ? '✓ Chính xác! Well done!'
-                : '✕ Chưa đúng. Cùng xem lại nhé!'}
+                ? '✓ Chính xác!'
+                : '✕ Chưa đúng. Xem lời giải bên dưới.'}
             </strong>
             {state.feedback.answer && <p lang="en">{state.feedback.answer}</p>}
             <p>{state.feedback.text}</p>

@@ -65,9 +65,7 @@ describe('pronunciation button', () => {
     expect(
       screen.queryByText(/Không phát được âm thanh/),
     ).not.toBeInTheDocument();
-    await user.click(
-      screen.getByRole('button', { name: 'Xong phần học, vào nhiệm vụ' }),
-    );
+    await user.click(screen.getByRole('button', { name: 'Vào nhiệm vụ' }));
     expect(screen.getByText('pencil', { selector: 'h2' })).not.toBeVisible();
     expect(document.querySelector('.quest-hunt-grid')).toBeVisible();
   });

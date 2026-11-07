@@ -10,7 +10,7 @@ for (const topic of topics) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/topics/${topic.id}`);
     await page
-      .getByRole('link', { name: 'Bắt đầu Quest', exact: true })
+      .getByRole('link', { name: 'Bắt đầu hành trình', exact: true })
       .click();
     await expect(page.locator('.quest-key-count')).toContainText('0/3');
     await expect(
@@ -28,9 +28,7 @@ for (const topic of topics) {
         exact: true,
       }),
     ).toBeVisible();
-    await page
-      .getByRole('button', { name: 'Xong phần học, vào nhiệm vụ' })
-      .click();
+    await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
     // A wrong choice never grants a key or advances the target.
     await page
       .getByRole('button', {
@@ -39,7 +37,9 @@ for (const topic of topics) {
       })
       .click();
     await expect(page.getByRole('status')).toContainText('Chưa đúng');
-    for (const word of topic.vocabulary.slice(0, 3)) {
+    for (let i = 0; i < 3; i++) {
+      const term = await page.locator('.quest-target strong').innerText();
+      const word = topic.vocabulary.find((word) => word.term === term)!;
       await page
         .getByRole('button', {
           name: `Tìm hình ${word.meaningVi}`,
@@ -67,14 +67,12 @@ for (const topic of topics) {
         exact: true,
       }),
     ).toBeVisible();
-    await page
-      .getByRole('button', { name: 'Xong phần học, vào nhiệm vụ' })
-      .click();
+    await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
     await expect(
-      page.getByRole('link', { name: 'Mở tab Thử thách' }),
+      page.getByRole('link', { name: 'Đến trang Thử thách' }),
     ).toHaveAttribute('href', `/challenges?topic=${topic.id}&quest=1`);
     if (topic.id === 'my-new-school') {
-      await page.getByRole('link', { name: 'Mở tab Thử thách' }).click();
+      await page.getByRole('link', { name: 'Đến trang Thử thách' }).click();
       await expect(
         page.getByRole('heading', { name: 'Thử thách tiếng Anh' }),
       ).toBeVisible();
@@ -83,7 +81,12 @@ for (const topic of topics) {
       await page
         .getByRole('button', { name: 'Bắt đầu chơi', exact: true })
         .click();
-      for (const [i, word] of topic.vocabulary.slice(0, 5).entries()) {
+      for (let i = 0; i < 5; i++) {
+        const term = await page
+          .locator('.word-tile:enabled')
+          .first()
+          .innerText();
+        const word = topic.vocabulary.find((word) => word.term === term)!;
         await page
           .getByRole('button', { name: word.term, exact: true })
           .click();
@@ -106,7 +109,7 @@ for (const topic of topics) {
       await expect(page).toHaveURL(/\/quest\/my-new-school$/);
       await expect(page.locator('.quest-key-count')).toContainText('1/3');
       await expect(
-        page.getByText('Bạn đã có lượt luyện tập hoàn thành ở chặng này.'),
+        page.getByText('Đã hoàn thành một lượt luyện tập trong chặng này.'),
       ).toBeVisible();
     }
     // Discover the shuffled deck using only the visible faces, then recall pairs.
@@ -155,14 +158,22 @@ for (const topic of topics) {
     await page
       .getByRole('button', { name: 'Đánh dấu đã xem bài học', exact: true })
       .click();
-    await page
-      .getByRole('button', { name: 'Xong phần học, vào nhiệm vụ' })
-      .click();
+    await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
     await expect(
-      page.getByRole('link', { name: 'Mở tab Thử thách' }),
+      page.getByRole('link', { name: 'Đến trang Thử thách' }),
     ).toHaveAttribute('href', `/challenges?topic=${topic.id}&quest=1`);
     await page.getByRole('button', { name: 'Xem gợi ý', exact: true }).click();
-    for (const token of topic.sentences[0].tokens) {
+    const fragments = await page
+      .locator('[aria-label="Mảnh từ mật thư"] button')
+      .allTextContents();
+    const cipher = topic.sentences.find(
+      (sentence) =>
+        sentence.tokens
+          .map((token) => token.text)
+          .sort()
+          .join('|') === [...fragments].sort().join('|'),
+    )!;
+    for (const token of cipher.tokens) {
       await page
         .locator('[aria-label="Mảnh từ mật thư"]')
         .getByRole('button', { name: token.text, exact: true, disabled: false })
@@ -188,7 +199,7 @@ for (const topic of topics) {
       .getByRole('button', { name: 'Mở rương kho báu', exact: true })
       .click();
     await expect(
-      page.getByRole('heading', { name: 'Hành trình hoàn thành!' }),
+      page.getByRole('heading', { name: 'Đã hoàn thành hành trình' }),
     ).toBeVisible();
     const progress = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('bleq_progress_v1')!),
@@ -198,7 +209,7 @@ for (const topic of topics) {
       topic.id === 'my-new-school' ? 1 : 0,
     );
     await page.reload();
-    await expect(page.getByText('Đã chinh phục hành trình này')).toBeVisible();
+    await expect(page.getByText('Đã hoàn thành hành trình này')).toBeVisible();
     await page.goto('/achievements');
     await expect(
       page.getByRole('link', { name: `${topic.titleEn} · Đã mở rương` }),
@@ -225,9 +236,7 @@ test('quest exit confirmation, recovery and responsive mission', async ({
     .click();
   for (let i = 0; i < 2; i++)
     await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
-  await page
-    .getByRole('button', { name: 'Xong phần học, vào nhiệm vụ' })
-    .click();
+  await page.getByRole('button', { name: 'Vào nhiệm vụ' }).click();
   for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     await expect(page.locator('.quest-hunt-grid button')).toHaveCount(6);

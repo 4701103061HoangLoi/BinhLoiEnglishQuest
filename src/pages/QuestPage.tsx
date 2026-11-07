@@ -17,6 +17,7 @@ import {
   Modal,
   Picture,
 } from '../components/Common';
+import { useTokenFlight } from '../games/useTokenFlight';
 import { GameSoundToggle } from '../components/GameSoundToggle';
 import { playFeedbackAudio } from '../lib/feedbackAudio';
 import { QuestGuide } from '../components/QuestGuide';
@@ -149,33 +150,33 @@ function Adventure({ topic }: { topic: Topic }) {
           </ol>
           {(progress.completedQuestIds ?? []).includes(topic.id) && (
             <p className="quest-earned">
-              <Trophy size={18} /> Đã chinh phục hành trình này
+              <Trophy size={18} /> Đã hoàn thành hành trình này
             </p>
           )}
         </aside>
         <section className="quest-mission">
           <h2 ref={panel} tabIndex={-1} className="quest-mission-heading">
             {!started
-              ? 'Sẵn sàng lên đường?'
+              ? 'Trước khi bắt đầu'
               : stage < 3
                 ? stations[stage]
                 : stage === 3
-                  ? 'Chiếc rương đã mở khóa!'
-                  : 'Hành trình hoàn thành!'}
+                  ? 'Đã đủ ba chìa khóa'
+                  : 'Đã hoàn thành hành trình'}
           </h2>
           {!started ? (
             <>
               <QuestGuide hint="Bắt đầu hành trình, vượt ba nhiệm vụ rồi dùng ba chìa khóa mở rương.">
-                Chào bạn! Mình là Mây. Cùng khám phá {topic.titleEn} nhé! Chạm
-                vào mình bất cứ khi nào cần nhắc cách chơi.
+                Mình là Mây, đi cùng bạn trong chủ đề {topic.titleEn}. Nếu quên
+                cách chơi, bạn bấm vào mình nhé.
               </QuestGuide>
               <p>
-                Mỗi nhiệm vụ đúng mang về một chìa khóa. Thu thập đủ ba chìa để
-                mở rương kho báu.
+                Hoàn thành mỗi chặng để nhận một chìa khóa. Đủ ba chìa thì mở
+                được rương.
               </p>
               <p className="muted">
-                Bạn có thể thử lại khi sai. Chìa khóa được lưu sau mỗi chặng.
-                Bạn có thể đi luyện thêm rồi trở lại tiếp tục hành trình.
+                Trả lời sai thì thử lại. Chìa khóa được lưu sau mỗi chặng, nên
+                bạn có thể dừng rồi quay lại chơi tiếp.
               </p>
               <button
                 className="button primary"
@@ -213,7 +214,7 @@ function Adventure({ topic }: { topic: Topic }) {
                 mood="celebrate"
                 hint="Bấm Mở rương kho báu để nhận dấu mốc hoàn thành."
               >
-                Bạn đã thu thập đủ ba chìa khóa. Kho báu đang chờ!
+                Đủ ba chìa khóa rồi. Bạn mở rương xem bên trong có gì nhé.
               </QuestGuide>
               <button className="button primary" onClick={openTreasure}>
                 Mở rương kho báu <Sparkles size={19} />
@@ -227,9 +228,9 @@ function Adventure({ topic }: { topic: Topic }) {
               <p>{story.ending}</p>
               <QuestGuide
                 mood="celebrate"
-                hint="Dấu mốc mở rương được lưu trong Thành tích. Bạn có thể khám phá chủ đề khác hoặc chơi lại."
+                hint="Bạn có thể xem kết quả ở Thành tích, chọn chủ đề khác hoặc chơi lại."
               >
-                ✓ Bạn đã chinh phục cả ba nhiệm vụ!
+                ✓ Bạn đã hoàn thành cả ba nhiệm vụ.
               </QuestGuide>
               <div className="actions">
                 <ActionLink to="/achievements">Xem thành tích</ActionLink>
@@ -315,7 +316,7 @@ function QuestStudy({
                 ?.focus();
             }}
           >
-            Xong phần học, vào nhiệm vụ
+            Vào nhiệm vụ
           </button>
         )}
       </details>
@@ -324,10 +325,10 @@ function QuestStudy({
           hint={
             stage === 2
               ? 'Đọc quy tắc rồi bấm Đánh dấu đã xem bài học.'
-              : 'Dùng nút Tiếp hoặc từ điển bỏ túi để xem đủ các từ của chặng này.'
+              : 'Bấm Tiếp hoặc chọn từ trong Danh sách từ để xem đủ bài của chặng này.'
           }
         >
-          Cùng học hành trang trước nhé! Khi đã xem đủ{' '}
+          Xem trước bài học của chặng này. Khi đã xem đủ{' '}
           {stage === 2 ? 'bài ngữ pháp' : 'các từ'}, nhiệm vụ bên dưới sẽ mở.
         </QuestGuide>
       ) : (
@@ -337,12 +338,12 @@ function QuestStudy({
             <section className="quest-practice">
               <h3>Luyện thêm trong chặng này</h3>
               <p className="muted">
-                Word Match, Quick Quiz và Sentence Builder nằm trong tab Thử
-                thách. Điểm và huy hiệu được lưu riêng; quay lại hành trình từ
-                trang kết quả. Luyện thêm không bắt buộc để nhận chìa khóa.
+                Bạn có thể luyện Word Match, Quick Quiz và Sentence Builder ở
+                mục Thử thách rồi quay lại đây. Phần luyện thêm có điểm và huy
+                hiệu riêng, không bắt buộc để nhận chìa khóa.
               </p>
               <ActionLink to={`/challenges?topic=${topic.id}&quest=1`}>
-                Mở tab Thử thách
+                Đến trang Thử thách
               </ActionLink>
               {progress.completedRuns.filter(
                 (run) =>
@@ -353,7 +354,7 @@ function QuestStudy({
                     : run.gameId !== 'word-match'),
               ).length > 0 && (
                 <p className="quest-earned">
-                  ✓ Bạn đã có lượt luyện tập hoàn thành ở chặng này.
+                  ✓ Đã hoàn thành một lượt luyện tập trong chặng này.
                 </p>
               )}
             </section>
@@ -365,7 +366,9 @@ function QuestStudy({
 }
 function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
   const { progress } = useProgress();
-  const targets = topic.vocabulary.slice(0, 3);
+  const [targets] = useState(() =>
+    shuffle(topic.vocabulary.slice(0, 3), Math.random),
+  );
   const [found, setFound] = useState<string[]>([]);
   const [answer, setAnswer] = useState('');
   const [items] = useState(() =>
@@ -377,8 +380,8 @@ function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
   return (
     <>
       <p>
-        Giúp người dẫn đường tìm ba đồ vật hoặc dấu vết. Đọc từ tiếng Anh và
-        chạm đúng hình.
+        Đọc từ tiếng Anh trong ô bên dưới rồi chọn hình tương ứng. Bạn cần tìm
+        đúng ba hình.
       </p>
       <div className="quest-target">
         <Search size={20} />
@@ -424,9 +427,9 @@ function Hunt({ topic, onComplete }: { topic: Topic; onComplete: () => void }) {
         hint="Đọc từ ở ô Tìm, rồi chọn hình phù hợp. Đúng rồi thì cất vào túi đồ để tìm từ tiếp theo."
       >
         {done
-          ? '✓ Chìa khóa thứ nhất thuộc về bạn!'
+          ? '✓ Đã tìm đủ ba hình. Bạn nhận được chìa khóa thứ nhất.'
           : correct
-            ? `✓ Đúng rồi! ${target.term}: ${target.meaningVi}.`
+            ? `✓ Đúng rồi! ${target.term} nghĩa là ${target.meaningVi}.`
             : answer
               ? `Chưa đúng. Gợi ý: tìm hình ${target.meaningVi}.`
               : 'Hãy quan sát các hình và tìm dấu vết đầu tiên.'}
@@ -454,7 +457,9 @@ function Memory({
   onComplete: () => void;
 }) {
   const { progress } = useProgress();
-  const words = topic.vocabulary.slice(3, 6);
+  const [words] = useState(() =>
+    shuffle(topic.vocabulary.slice(3), Math.random).slice(0, 3),
+  );
   const [cards] = useState(() => createMemoryCards(words, Math.random));
   const [state, setState] = useState(initialMemory);
   const done = state.matched.length === words.length;
@@ -520,11 +525,11 @@ function Memory({
         hint="Mỗi cặp có một thẻ chữ và một thẻ hình. Lật hai thẻ, ghi nhớ vị trí rồi ghép lại cho đúng."
       >
         {done
-          ? '✓ Đủ ba cặp! Bạn nhận được chìa khóa thứ hai.'
+          ? '✓ Đã ghép đủ ba cặp. Bạn nhận được chìa khóa thứ hai.'
           : pair
             ? matched
-              ? '✓ Hai thẻ cùng nghĩa! Hãy tiếp tục khám phá.'
-              : 'Hai thẻ chưa cùng nghĩa. Ghi nhớ vị trí rồi thử lại nhé.'
+              ? '✓ Ghép đúng cặp rồi. Bạn lật tiếp nhé.'
+              : 'Hai thẻ chưa cùng nghĩa. Ghi nhớ vị trí trước khi úp lại.'
             : state.open.length
               ? 'Chọn thêm một thẻ để ghép cặp.'
               : 'Lật một thẻ bất kỳ để bắt đầu.'}
@@ -549,12 +554,13 @@ function Cipher({
   onComplete: () => void;
 }) {
   const { progress } = useProgress();
-  const sentence = topic.sentences[0];
+  const [sentence] = useState(() => shuffle(topic.sentences, Math.random)[0]);
   const [tokens] = useState(() => shuffledTokens(sentence.tokens, Math.random));
   const [selected, setSelected] = useState<string[]>([]);
   const [feedback, setFeedback] = useState('');
   const [solved, setSolved] = useState(false);
   const [hint, setHint] = useState(false);
+  const flight = useTokenFlight(selected, sentence.id);
   function check() {
     const correct = isSentenceCorrect(
       tokens,
@@ -570,10 +576,10 @@ function Cipher({
     );
   }
   return (
-    <>
+    <div ref={flight.containerRef} className="sentence-workspace">
       <p>
-        Những mảnh giấy trong bản đồ tạo thành một câu tiếng Anh. Xếp đúng thứ
-        tự để nhận chìa khóa cuối cùng.
+        Xếp các mảnh từ thành một câu đúng để lấy chìa khóa cuối. Chạm một từ đã
+        chọn nếu muốn bỏ ra và xếp lại.
       </p>
       <p className="muted">Quy tắc gợi ý: {topic.grammarTitle}</p>
       <div className="quest-sentence" role="group" aria-label="Câu mật thư">
@@ -582,11 +588,15 @@ function Cipher({
             <button
               className="token selected"
               key={id}
+              data-token-id={id}
+              data-token-zone="answer"
               disabled={solved}
-              onClick={() => {
-                setSelected(selected.filter((item) => item !== id));
-                setFeedback('');
-              }}
+              onClick={(event) =>
+                flight.move(event.currentTarget, () => {
+                  setSelected(selected.filter((item) => item !== id));
+                  setFeedback('');
+                })
+              }
             >
               {tokens.find((token) => token.id === id)!.text}
             </button>
@@ -601,11 +611,15 @@ function Cipher({
             className="token"
             lang="en"
             key={token.id}
+            data-token-id={token.id}
+            data-token-zone="bank"
             disabled={solved || selected.includes(token.id)}
-            onClick={() => {
-              setSelected([...selected, token.id]);
-              setFeedback('');
-            }}
+            onClick={(event) =>
+              flight.move(event.currentTarget, () => {
+                setSelected([...selected, token.id]);
+                setFeedback('');
+              })
+            }
           >
             {token.text}
           </button>
@@ -622,10 +636,12 @@ function Cipher({
         <button
           className="button secondary"
           disabled={solved || !selected.length}
-          onClick={() => {
-            setSelected([]);
-            setFeedback('');
-          }}
+          onClick={() =>
+            flight.reset(() => {
+              setSelected([]);
+              setFeedback('');
+            })
+          }
         >
           Xếp lại
         </button>
@@ -650,7 +666,7 @@ function Cipher({
         {feedback}
       </QuestGuide>
       {solved && <NextStation onClick={onComplete} final />}
-    </>
+    </div>
   );
 }
 function NextStation({

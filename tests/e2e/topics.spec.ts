@@ -55,7 +55,11 @@ for (const topic of [newSchool, house, friends]) {
       await page.getByRole('button', { name: 'Bắt đầu chơi' }).click();
       for (let i = 0; i < 5; i++) {
         if (gameId === 'word-match') {
-          const word = topic.vocabulary[i];
+          const term = await page
+            .locator('.word-tile:enabled')
+            .first()
+            .innerText();
+          const word = topic.vocabulary.find((word) => word.term === term)!;
           await page
             .getByRole('button', { name: word.term, exact: true })
             .click();
