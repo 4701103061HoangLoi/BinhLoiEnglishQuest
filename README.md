@@ -211,3 +211,11 @@ Dự án dùng npm workspaces, một `package-lock.json` ở gốc. Cài bằng 
 Chạy hai terminal: `npm run dev` cho frontend và `npm run dev:backend` cho backend tự tải lại khi sửa mã. Frontend proxy `/api` tới `127.0.0.1:3001`. Production: `npm run build` rồi `npm start`; backend phục vụ frontend và API cùng origin. `npm run test` kiểm thử cả hai workspace; `npm run test:e2e` kiểm tra tích hợp. Có thể chạy riêng bằng `npm run test --workspace @bleq/frontend` hoặc `@bleq/backend`.
 
 Khi deploy cần `frontend/dist/`, toàn bộ `backend/`, manifest gốc và thư mục dữ liệu bền vững; không dùng thư mục `dist/` cũ ở gốc. Hosting static đặt Root Directory là `frontend`, nhưng bảng xếp hạng vẫn cần backend Node. Backend hiện dùng JavaScript ES modules và thư viện chuẩn Node; frontend giữ TypeScript strict. API, cookie và dữ liệu học tập giữ nguyên qua lần tách này.
+
+## Ôn tập hôm nay
+
+Trang chủ dẫn đến `/review`: mỗi lượt tối đa 5 từ, ưu tiên từ trả lời sai trong ôn tập, từ đến hạn và từ đã xem. Nếu chưa học từ nào, dùng từ Unit 1. Bộ lựa chọn được xáo trộn một lần cho lượt chơi. Sau mỗi câu có nghĩa, phiên âm, ví dụ và nút nghe; Mây phản hồi theo đáp án.
+
+Đúng ở ngày mới tăng khoảng ôn lần lượt 1, 3, 7, 14 ngày; sai đưa từ về hạn hôm nay. Ôn lặp cùng ngày không tăng cấp ghi nhớ. Mục tiêu là 5 từ khác nhau đã ôn trong ngày (kể cả trả lời sai); chuỗi ngày ghi nhận ngày có ôn tập theo lịch địa phương của thiết bị. Nếu ít hơn 5 từ đã học, người học được hướng dẫn học thêm. Không gửi điểm ôn lên bảng xếp hạng.
+
+Dữ liệu `review` là trường tùy chọn trong progress v1: bản cũ vẫn đọc được, mỗi đáp án lưu ngay, xóa tiến độ cũng xóa lịch ôn. Tiến độ phụ thuộc trình duyệt và ngày giờ thiết bị; chưa đồng bộ nhiều thiết bị. Logic thuần ở `frontend/src/lib/review.ts`, giao diện ở `frontend/src/pages/ReviewPage.tsx`; lịch nhắc là quy tắc đơn giản, không phải mô hình đánh giá trình độ cá nhân.

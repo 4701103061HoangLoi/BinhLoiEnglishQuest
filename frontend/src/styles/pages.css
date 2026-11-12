@@ -1250,3 +1250,32 @@ select {
   font-weight: 650;
   margin-bottom: 12px;
 }
+
+.daily-review {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  background: var(--soft-blue);
+  border-radius: 16px;
+}
+.review-lesson {
+  padding: 32px 0;
+}
+.review-options {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+.review-options .review-correct {
+  border-color: var(--teal);
+  background: var(--soft-green);
+  opacity: 1;
+}
+@media (max-width: 600px) {
+  .daily-review {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

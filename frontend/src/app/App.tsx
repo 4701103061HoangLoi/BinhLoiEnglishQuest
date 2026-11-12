@@ -1,3 +1,4 @@
+import { ReviewPage } from '../pages/ReviewPage';
 import { useEffect } from 'react';
 import {
   createBrowserRouter,
@@ -108,6 +109,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: '/', element: <HomePage /> },
+      { path: '/review', element: <ReviewPage /> },
       { path: '/demo', element: <DemoPage /> },
       { path: '/challenges', element: <ChallengesPage /> },
       { path: '/quest/:topicId', element: <QuestPage /> },

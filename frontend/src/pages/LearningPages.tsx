@@ -1,3 +1,4 @@
+import { DailyReviewCard } from './ReviewPage';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
@@ -79,6 +80,7 @@ export function HomePage() {
   const topic = topics.find((item) => item.id === topicId)!;
   return (
     <>
+      <DailyReviewCard />
       <section className="hero">
         <img
           className="explorer-clouds"

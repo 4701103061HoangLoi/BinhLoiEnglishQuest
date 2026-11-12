@@ -1,3 +1,4 @@
+import type { ReviewProgress } from './lib/review';
 export type GameId = 'word-match' | 'quick-quiz' | 'sentence-builder';
 export type GameMode = 'challenge' | 'practice';
 export interface VocabularyItem {
@@ -80,6 +81,7 @@ export interface GameRun {
   answers: Answer[];
 }
 export interface UserProgress {
+  review?: ReviewProgress;
   version: 1;
   nickname: string;
   settings: { soundEnabled: boolean; reducedMotion: boolean };

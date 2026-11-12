@@ -1,3 +1,4 @@
+import { validReview } from './review';
 import type { GameRun, UserProgress } from '../types';
 import { badgesForRun } from './gameLogic';
 export const STORAGE_KEY = 'bleq_progress_v1';
@@ -59,6 +60,7 @@ export function validProgress(value: unknown): value is UserProgress {
   return (
     record(value) &&
     value.version === 1 &&
+    (value.review === undefined || validReview(value.review)) &&
     typeof value.nickname === 'string' &&
     value.nickname.length <= 40 &&
     record(value.settings) &&
