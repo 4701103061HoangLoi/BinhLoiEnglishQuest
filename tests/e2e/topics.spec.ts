@@ -69,8 +69,6 @@ for (const topic of [newSchool, house, friends]) {
               exact: true,
             })
             .click();
-          if (i < 4)
-            await page.getByRole('button', { name: 'Tiếp tục ghép' }).click();
         } else {
           if (gameId === 'quick-quiz') {
             const prompt = await page.locator('.question').innerText();

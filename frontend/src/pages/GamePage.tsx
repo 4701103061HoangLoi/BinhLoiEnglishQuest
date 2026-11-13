@@ -192,9 +192,7 @@ function ActiveGame({
                   <button
                     key={item.id}
                     className={`word-tile ${state.selectedWord === item.id ? 'selected' : ''} ${state.matched.includes(item.id) ? 'matched' : ''}`}
-                    disabled={
-                      state.matched.includes(item.id) || !!state.feedback
-                    }
+                    disabled={state.matched.includes(item.id)}
                     aria-pressed={state.selectedWord === item.id}
                     onClick={() => game.selectWord(item.id)}
                   >
@@ -210,9 +208,7 @@ function ActiveGame({
                     className={`picture-tile ${state.matched.includes(item.id) ? 'matched' : ''}`}
                     aria-label={`Chọn hình ${item.meaningVi}`}
                     disabled={
-                      state.matched.includes(item.id) ||
-                      !!state.feedback ||
-                      !state.selectedWord
+                      state.matched.includes(item.id) || !state.selectedWord
                     }
                     onClick={() => game.selectImage(item.id)}
                   >
@@ -353,14 +349,12 @@ function ActiveGame({
             </strong>
             {state.feedback.answer && <p lang="en">{state.feedback.answer}</p>}
             <p>{state.feedback.text}</p>
-            <button className="button primary" onClick={game.next}>
-              {gameId === 'word-match'
-                ? 'Tiếp tục ghép'
-                : state.index === 4
-                  ? 'Xem kết quả'
-                  : 'Câu tiếp theo'}
-              <ArrowRight size={18} />
-            </button>
+            {gameId !== 'word-match' && (
+              <button className="button primary" onClick={game.next}>
+                {state.index === 4 ? 'Xem kết quả' : 'Câu tiếp theo'}
+                <ArrowRight size={18} />
+              </button>
+            )}
           </div>
         )}
       </div>

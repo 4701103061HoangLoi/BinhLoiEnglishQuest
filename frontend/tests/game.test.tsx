@@ -102,29 +102,48 @@ describe('game interaction engine', () => {
     expect(result.current.state.answers).toHaveLength(1);
     expect(result.current.state.answers[0].isCorrect).toBe(true);
   });
-  it('times out while feedback is open and saves unanswered items without bonus', () => {
-    vi.useFakeTimers();
-    const save = vi.fn();
-    const { result } = renderHook(
-      () => useGame(neighbourhood, 'quick-quiz', 'challenge', save),
-      { wrapper: StrictMode },
-    );
-    act(() =>
-      result.current.answerQuiz(
-        result.current.questions.quiz[0].correctOptionId,
-      ),
-    );
-    act(() => vi.advanceTimersByTime(91000));
-    expect(save).toHaveBeenCalledTimes(1);
-    expect(save.mock.calls[0][0]).toMatchObject({
-      finishedBy: 'timeout',
-      baseScore: 10,
-      timeBonus: 0,
-    });
-    expect(save.mock.calls[0][0].answers).toHaveLength(5);
-    act(() => vi.advanceTimersByTime(5000));
-    expect(save).toHaveBeenCalledTimes(1);
-  });
+  it.each(['quick-quiz', 'sentence-builder'] as const)(
+    'pauses %s feedback and resumes the deadline on next',
+    (gameId) => {
+      vi.useFakeTimers();
+      const save = vi.fn();
+      const { result } = renderHook(
+        () => useGame(neighbourhood, gameId, 'challenge', save),
+        { wrapper: StrictMode },
+      );
+      act(() => vi.advanceTimersByTime(5000));
+      if (gameId === 'quick-quiz') {
+        act(() =>
+          result.current.answerQuiz(
+            result.current.questions.quiz[0].correctOptionId,
+          ),
+        );
+      } else {
+        const q = result.current.questions.sentences[0];
+        const original = sentences.find((s) => s.id === q.id)!;
+        for (const token of original.tokens)
+          act(() => result.current.toggleToken(token.id));
+        act(() => result.current.checkSentence());
+      }
+      const remaining = result.current.remaining;
+      act(() => vi.advanceTimersByTime(200000));
+      expect(result.current.remaining).toBe(remaining);
+      expect(save).not.toHaveBeenCalled();
+      act(() => result.current.next());
+      act(() => vi.advanceTimersByTime(1000));
+      expect(result.current.remaining).toBe(remaining - 1);
+      act(() => vi.advanceTimersByTime(200000));
+      expect(save).toHaveBeenCalledTimes(1);
+      expect(save.mock.calls[0][0]).toMatchObject({
+        finishedBy: 'timeout',
+        baseScore: 10,
+        timeBonus: 0,
+      });
+      expect(save.mock.calls[0][0].answers).toHaveLength(5);
+      act(() => vi.advanceTimersByTime(5000));
+      expect(save).toHaveBeenCalledTimes(1);
+    },
+  );
   it('prevents answers after a suspended tab passes the deadline', () => {
     vi.useFakeTimers();
     const save = vi.fn();

@@ -96,10 +96,6 @@ for (const topic of topics) {
             exact: true,
           })
           .click();
-        if (i < 4)
-          await page
-            .getByRole('button', { name: 'Tiếp tục ghép', exact: true })
-            .click();
       }
       await expect(page).toHaveURL(/\/results\//);
       await expect(page.locator('.result-summary')).toContainText('50/50');

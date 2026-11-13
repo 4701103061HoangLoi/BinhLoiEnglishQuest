@@ -46,10 +46,24 @@ export function useGame(
     done: false,
   });
   const latest = useRef(state);
+  const clock = useRef({ pausedAt: null as number | null, pausedMs: 0 });
+  function activeTime() {
+    return (clock.current.pausedAt ?? Date.now()) - clock.current.pausedMs;
+  }
   const [now, setNow] = useState(identity.start);
   const finishCallback = useRef(onFinish);
   finishCallback.current = onFinish;
   const commit = (next: GameState) => {
+    if (gameId !== 'word-match' && mode === 'challenge') {
+      const time = Date.now();
+      if (next.feedback && clock.current.pausedAt === null)
+        clock.current.pausedAt = time;
+      else if (!next.feedback && clock.current.pausedAt !== null) {
+        clock.current.pausedMs += time - clock.current.pausedAt;
+        clock.current.pausedAt = null;
+      }
+      setNow(activeTime());
+    }
     latest.current = next;
     setState(next);
   };
@@ -94,7 +108,9 @@ export function useGame(
       gameId,
       correct,
       current.wrong,
-      reason === 'timeout' ? 0 : remainingSeconds(identity.deadline, end),
+      reason === 'timeout'
+        ? 0
+        : remainingSeconds(identity.deadline, activeTime()),
       reason === 'completed',
       mode,
     );
@@ -106,7 +122,10 @@ export function useGame(
       mode,
       startedAt: new Date(identity.start).toISOString(),
       finishedAt: new Date(end).toISOString(),
-      elapsedSeconds: Math.max(0, Math.floor((end - identity.start) / 1000)),
+      elapsedSeconds: Math.max(
+        0,
+        Math.floor((activeTime() - identity.start) / 1000),
+      ),
       correctCount: correct,
       wrongCount: current.wrong,
       ...score,
@@ -119,7 +138,7 @@ export function useGame(
   finishRef.current = finish;
   useEffect(() => {
     const tick = () => {
-      const time = Date.now();
+      const time = activeTime();
       setNow(time);
       if (
         mode === 'challenge' &&
@@ -138,28 +157,25 @@ export function useGame(
   }, [identity, mode]);
   function canAct() {
     if (latest.current.done) return false;
-    if (mode === 'challenge' && Date.now() >= identity.deadline) {
+    if (mode === 'challenge' && activeTime() >= identity.deadline) {
       finish('timeout');
       return false;
     }
     return true;
   }
   function selectWord(id: string) {
-    if (
-      canAct() &&
-      !latest.current.feedback &&
-      !latest.current.matched.includes(id)
-    )
-      commit({ ...latest.current, selectedWord: id });
+    if (canAct() && !latest.current.matched.includes(id))
+      commit({ ...latest.current, selectedWord: id, feedback: null });
   }
   function selectImage(id: string) {
     if (!canAct()) return;
     const s = latest.current;
-    if (!s.selectedWord || s.feedback || s.matched.includes(id)) return;
+    if (!s.selectedWord || s.matched.includes(id)) return;
     const item = questions.match.find((q) => q.id === s.selectedWord)!;
     const correct = s.selectedWord === id;
     const next = {
       ...s,
+      selectedWord: null,
       wrong: s.wrong + (correct ? 0 : 1),
       matched: correct ? [...s.matched, id] : s.matched,
       answers: correct

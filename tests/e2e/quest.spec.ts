@@ -82,15 +82,19 @@ test('complete all games, persist badges and recover routes', async ({
       })
       .click();
     await expect(page.locator('.feedback')).toContainText('Hai thẻ chưa khớp');
-    await page.getByRole('button', { name: 'Tiếp tục ghép' }).click();
+    await expect(page.locator('.word-tile:enabled')).toHaveCount(5);
   }
   for (const [i, word] of matchWords.entries()) {
     await page.getByRole('button', { name: word.term, exact: true }).click();
     await page
       .getByRole('button', { name: `Chọn hình ${word.meaningVi}`, exact: true })
       .click();
-    if (i < 4)
-      await page.getByRole('button', { name: 'Tiếp tục ghép' }).click();
+    if (i < 4) {
+      await expect(
+        page.getByRole('button', { name: 'Tiếp tục ghép' }),
+      ).toHaveCount(0);
+      await expect(page.locator('.word-tile:enabled')).toHaveCount(4 - i);
+    }
   }
   await expect(page).toHaveURL(/\/results\//);
   await expect(page.locator('.result-summary')).toContainText('40/50');
@@ -228,6 +232,11 @@ test('touch tokens, keyboard answers and actual deadline timeout', async ({
   await page.locator('.quiz-option').first().focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('.feedback')).toBeVisible();
+  const remaining = await page.locator('.timer').innerText();
+  await page.clock.fastForward(91000);
+  await expect(page.locator('.timer')).toHaveText(remaining);
+  await expect(page.locator('.feedback')).toBeVisible();
+  await page.getByRole('button', { name: 'Câu tiếp theo' }).click();
   await page.clock.fastForward(91000);
   await expect(page).toHaveURL(/\/results\//);
   await expect(page.getByRole('heading', { name: 'Đã hết giờ' })).toBeVisible();
