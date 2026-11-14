@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -93,14 +93,45 @@ describe('shared leaderboard', () => {
         </ProgressProvider>
       </MemoryRouter>,
     );
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Đăng điểm' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Để sau' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(fetcher).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Đăng điểm' }));
+    const dialog = within(screen.getByRole('dialog'));
+    const submit = dialog.getByRole('button', { name: 'Đăng điểm' });
+    const nickname = dialog.getByLabelText('Biệt danh hiển thị công khai');
+    await userEvent.clear(nickname);
+    await userEvent.type(nickname, '   ');
+    expect(submit).toBeDisabled();
+    await userEvent.clear(nickname);
+    await userEvent.type(nickname, 'Mây{Enter}');
     expect(await screen.findByText('Chưa lưu được điểm.')).toBeInTheDocument();
     expect(JSON.parse(fetcher.mock.calls[0][1].body).run.score).toBe(54);
-    fetcher.mockResolvedValue(response({ ok: true }));
-    await userEvent.click(screen.getByRole('button', { name: 'Đăng điểm' }));
+    let finish!: (value: ReturnType<typeof response>) => void;
+    fetcher.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    await userEvent.click(submit);
+    expect(dialog.getByRole('button', { name: 'Đang đăng…' })).toBeDisabled();
+    expect(
+      dialog.getByRole('button', { name: 'Đóng hộp thoại' }),
+    ).toBeDisabled();
+    expect(nickname).toBeDisabled();
+    finish(response({ ok: true }));
     expect(
       await screen.findByText('Đã cập nhật điểm cao nhất của bạn.'),
+    ).toBeInTheDocument();
+    expect(
+      dialog.queryByRole('button', { name: 'Đăng điểm' }),
+    ).not.toBeInTheDocument();
+    await userEvent.click(dialog.getByRole('button', { name: 'Về kết quả' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Xem điểm đã đăng' }),
     ).toBeInTheDocument();
   });
   it('does not offer practice scores for publication', () => {

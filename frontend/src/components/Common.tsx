@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Compass, Volume2 } from 'lucide-react';
 import { useProgress } from '../contexts/ProgressContext';
@@ -76,22 +82,33 @@ export function Modal({
   onCancel,
   onConfirm,
   confirmText = 'Đồng ý',
+  className,
+  initialFocus,
 }: {
   title: string;
   children: ReactNode;
   onCancel: () => void;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   confirmText?: string;
+  className?: string;
+  initialFocus?: RefObject<HTMLElement | null>;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = ref.current!;
+    const previousFocus = document.activeElement;
     dialog.showModal();
-    return () => dialog.close();
-  }, []);
+    initialFocus?.current?.focus();
+    return () => {
+      dialog.close();
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected)
+        previousFocus.focus();
+    };
+  }, [initialFocus]);
   return (
     <dialog
       ref={ref}
+      className={className}
       onCancel={(event) => {
         event.preventDefault();
         onCancel();
@@ -99,15 +116,17 @@ export function Modal({
       aria-labelledby="dialog-title"
     >
       <h2 id="dialog-title">{title}</h2>
-      <p>{children}</p>
-      <div className="actions">
-        <button className="button secondary" onClick={onCancel} autoFocus>
-          Hủy / Ở lại
-        </button>
-        <button className="button danger" onClick={onConfirm}>
-          {confirmText}
-        </button>
-      </div>
+      {onConfirm ? <p>{children}</p> : children}
+      {onConfirm && (
+        <div className="actions">
+          <button className="button secondary" onClick={onCancel} autoFocus>
+            Hủy / Ở lại
+          </button>
+          <button className="button danger" onClick={onConfirm}>
+            {confirmText}
+          </button>
+        </div>
+      )}
     </dialog>
   );
 }

@@ -169,7 +169,7 @@ Cả 36 từ của bốn chủ đề có phiên âm IPA Anh-Mỹ, hiển thị d
 ## Bảng xếp hạng chung và triển khai trên máy ảo
 
 - `/leaderboard`: xem 50 người đứng đầu, lọc chủ đề/trò chơi, làm mới và xem hạng của mình. Mỗi trình duyệt có một danh tính ẩn danh riêng; trùng biệt danh vẫn là hai người. Đổi máy hoặc xóa cookie không khôi phục được danh tính cũ.
-- Từ trang kết quả **Thử thách**, nhập biệt danh rồi bấm **Đăng điểm** để công khai điểm lượt đó. Luyện tập và Quest không ghi điểm lên bảng này. Không tự đăng lịch sử cũ hay dữ liệu học tập.
+- Từ trang kết quả **Thử thách**, bấm **Đăng điểm** để mở hộp thoại, kiểm tra điểm và nhập biệt danh rồi xác nhận **Đăng điểm**. Có thể đóng bằng **Để sau**, nút đóng hoặc Escape trước khi gửi; lỗi đăng giữ lại biệt danh để thử lại, thành công có liên kết xem bảng xếp hạng. Luyện tập và Quest không ghi điểm lên bảng này. Không tự đăng lịch sử cũ hay dữ liệu học tập.
 - Mỗi người giữ kỷ lục ở 12 mục (4 chủ đề × 3 trò); tổng điểm là tổng các kỷ lục khớp bộ lọc. Đăng lại hoặc đăng điểm thấp hơn không cộng thêm điểm. Bằng điểm cùng hạng; thứ tự hiển thị phụ theo biệt danh. Trò 90 giây hiện đạt tối đa 56 điểm, trò 150 giây tối đa 60 điểm theo công thức hiện có.
 - Nút **Gỡ toàn bộ điểm tôi đã đăng** có xác nhận, chỉ gỡ dữ liệu của trình duyệt hiện tại; không xóa tiến độ học cục bộ. Không dùng tên thật, số điện thoại hoặc tên lớp làm biệt danh.
 

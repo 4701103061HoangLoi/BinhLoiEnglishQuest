@@ -19,8 +19,18 @@ async function playAndPublish(page: Page, nickname: string) {
       .click();
   }
   await expect(page).toHaveURL(/\/results\//);
+  const trigger = page.getByRole('button', { name: 'Đăng điểm', exact: true });
+  await trigger.click();
+  await expect(page.getByLabel('Biệt danh hiển thị công khai')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await trigger.click();
   await page.getByLabel('Biệt danh hiển thị công khai').fill(nickname);
-  await page.getByRole('button', { name: 'Đăng điểm' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: 'Đăng điểm', exact: true })
+    .click();
   await expect(
     page.getByText('Đã cập nhật điểm cao nhất của bạn.'),
   ).toBeVisible();
